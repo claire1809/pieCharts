@@ -1,0 +1,24 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width')
+        title 图形化报表
+        link(type='text/css', href='/style/menu.css', rel='stylesheet')
+    body
+        input#user(value=userid type='hidden')
+        .container
+            each item,index in menus
+                div
+                    a(href='/' + item.MENU_URL + '?id=' + item.ID + '&userid=' + userid id=item.ID) #{item.MENU_NAME}
+
+        script(type='text/javascript').
+            let userid = document.querySelector('#user').value;
+            let storage = window.localStorage;
+            if(!storage.getItem('userid')) {
+                storage.setItem('userid', userid);
+            }
+            if(storage.getItem('season') !== null) {
+                storage.removeItem('season');
+            }
+            

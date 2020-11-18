@@ -1,0 +1,245 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width')
+    meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    title ECharts
+    // 引入 echarts.js
+    script(src='echarts.common.min.js')
+    link(type='text/css',href='/style/style.css',rel='stylesheet')
+  body
+    .data-container
+        .data-content
+            span.txt-center 流水
+            hr
+            | 当前：90,000万
+            br
+            | 上周：60,000万
+            span.flag.flag-down ↓
+            br
+            | 上月：40,000万
+            span.flag.flag-down ↓
+        .data-content
+            span.txt-center 应收
+            hr
+            | 当前：30,000万
+            br
+            | 上周：40,000万
+            span.flag.flag-up ↑
+            br
+            | 上月：30,000万
+        .data-content
+            span.txt-center 应收比例
+            hr
+            | 当前：33.33%
+            br
+            | 上周：66.67%
+            span.flag.flag-up ↑
+            br
+            | 上月：75%
+            span.flag.flag-up ↑
+    #main.chart-container(style='width: 100%;height:400px;')
+    #detail.chart-container(style='width: 100%; height: 400px')
+    script(type='text/javascript').
+        // 基于准备好的dom，初始化echarts实例
+        //- let myChart = echarts.init(document.getElementById('main'), null, {renderer: 'svg'});
+        let myChart = echarts.init(document.getElementById('main'));
+        // 指定图表的配置项和数据
+        let option = {
+            title: {
+                text: ''
+            },
+            //- tooltip: {
+            //-     trigger: 'item',
+            //-     formatter: '{a} <br/>{b}: {c}%'
+            //- },
+            //- xAxis: {
+            //-     data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+            //- },
+            //- yAxis: {},
+            series: [{
+                name: '应收比例',
+                radius: '40%',
+                center: ['50%', '40%'],
+                type: 'pie',
+                label: {
+                    //- formatter: [
+                    //-     '{a|{a}}','{hr|}','{b|{b}：}{c}'
+                    //- ].join('\n'),
+                    formatter: function(a) {
+                        console.log(a);
+                        let seriesName = a.seriesName;
+                        let name = a['data'].name;
+                        let value = a['data'].value;
+                        let nameReturn = "";
+                        if(name.length > 4) {
+                            nameReturn = name.substr(0,4) + "\n" + name.substr(4);
+                        } else {
+                            nameReturn = name;
+                        }
+                        return '{a|' + seriesName + '}\n{hr|}\n{b|' + nameReturn + ':' + value + '%}';
+                    },
+                    backgroundColor: '#eee',
+                    borderColor: '#aaa',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    rich: {
+                        a: {
+                            color: '#999',
+                            lineHeight: 22,
+                            align: 'center'
+                        },
+                        hr: {
+                            borderColor: '#aaa',
+                            width: '100%',
+                            borderWidth: 0.5,
+                            height: 0
+                        },
+                        b: {
+                            fontSize: 16,
+                            lineHeight: 20,
+                            align: 'left',
+                            padding: [0, 5, 0, 5],
+                        }
+                    }
+                },
+                data: [{name: '天津合创', value: '20'},
+                        {name: '多盟', value: '8'},
+                        {name: '亿动', value: '15'},
+                        {name: '蓝标传媒中央', value: '2'},
+                        {name: '蓝瀚互动', value: '15'},
+                        {name: '集团媒体购买中心', value: '12'},
+                        {name: '品牌中心', value: '18'},
+                        {name: '西红柿', value: '10'}]
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+
+        let myChart1 = echarts.init(document.getElementById('detail'));
+        let option1 = {
+            color: ['#f7de31', '#489967', '#cd2832'],
+            title: {
+                text: ''
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b}: {c}'
+            },
+            grid: {
+                //- left: 30,
+                bottom: '20%'
+            },
+            legend: {
+                data: ['上月','上周','当前'],
+            },
+            xAxis: {
+                type: 'category',
+                data: ['天津合创','多盟','亿动','蓝标传媒中央','蓝瀚互动','集团媒体购买中心','品牌中心','西红柿'],
+                axisLabel:{
+                    interval: 0,
+                    formatter: function(val) {
+                        return val.split("").join("\n");
+                    }
+                }
+                
+                
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    margin: 2,
+                    formatter: function (value, index) {
+                        if (value >= 10000 && value < 10000000) {
+                            value = value / 10000 + "万";
+                        } else if (value >= 10000000) {
+                            value = value / 10000000 + "千万";
+                        }
+                        return value;
+                    }
+                }
+            },
+            series: [
+                {
+                    name: '上月',
+                    type: 'bar',
+                    data: [
+                        {name: '天津合创', value: '20'},
+                        {name: '多盟', value: '13'},
+                        {name: '亿动', value: '20'},
+                        {name: '蓝标传媒中央', value: '36'},
+                        {name: '蓝瀚互动', value: '50'},
+                        {name: '集团媒体购买中心', value: '35'},
+                        {name: '品牌中心', value: '33'},
+                        {name: '西红柿', value: '10'}
+                    ]
+                },
+                {
+                    name: '上周',
+                    type: 'bar',
+                    data: [
+                        {name: '天津合创', value: '30'},
+                        {name: '多盟', value: '22'},
+                        {name: '亿动', value: '33'},
+                        {name: '蓝标传媒中央', value: '44'},
+                        {name: '蓝瀚互动', value: '55'},
+                        {name: '集团媒体购买中心', value: '66'},
+                        {name: '品牌中心', value: '77'},
+                        {name: '西红柿', value: '88'}
+                    ]
+                },
+                {
+                    name: '当前',
+                    type: 'bar',
+                    data: [
+                        {name: '天津合创', value: '40'},
+                        {name: '多盟', value: '35'},
+                        {name: '亿动', value: '56'},
+                        {name: '蓝标传媒中央', value: '67'},
+                        {name: '蓝瀚互动', value: '78'},
+                        {name: '集团媒体购买中心', value: '89'},
+                        {name: '品牌中心', value: '90'},
+                        {name: '西红柿', value: '100'}
+                    ]
+                },
+            ]
+        };
+        myChart1.setOption(option1);
+
+        let clicked = 1;
+        let clickedTime = {
+            timeA: '',
+            timeB: ''
+        };
+        function clicking (name) {
+            if (clicked === 1) {
+            clickedTime.timeA = new Date();
+            clicked++;
+            } else if (clicked === 2) {
+            clickedTime.timeB = new Date();
+            if (Math.abs(clickedTime.timeA - clickedTime.timeB) < 300) {
+                //  双击
+                dblClick(name);
+                clicked = 1;
+            } else {
+                clickedTime.timeA = new Date();
+            }
+            }
+        }
+        function dblClick (name) {
+            console.log('双击');
+            window.location = '/detail?name=' + name;
+        }
+        myChart.on('click', (params) => {
+            console.log(params.name);
+            //- alert(params.name);
+            //- $.ajax({
+            //-     url: "/detail",
+            //-     success(res) {
+            //-         console.log(res);
+                    
+            //-     }
+            //- })
+            clicking(params.name);
+        });

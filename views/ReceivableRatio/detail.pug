@@ -1,0 +1,536 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width')
+    meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    title 应收比例报表
+    // 引入 echarts.js
+    script(src='/js/echarts.common.min.js')
+    script(src='/js/jquery-3.4.0.js')
+    script(src='/js/common.js')
+    link(type='text/css',href='/style/style.css',rel='stylesheet')
+  body
+    div 
+        input#dataField(type="hidden" value=hatid)
+        select#year(disabled=true)
+            option 2017
+            option 2018
+            option 2019
+            option 2020
+        |-
+        select#season(disabled=true)
+            option Q1
+            option Q2
+            option Q3
+            option Q4
+            option 全年
+        
+    div.tab
+        //- a#back(href='/') 返回
+        //- a#dept.right(href='/detail?type=dept') 一级部门
+        //- a#client.right(href='/detail?type=client') 客户
+        a#dept.active 一级部门
+        a#client 客户
+    div.data-all
+        span.txt-center
+            h3#title 
+        table
+            thead
+                tr
+                    th
+                    th 流水
+                    th 应收
+                    th 应收比例
+            tbody
+                //- tr
+                //-     th 当前
+                //-     td 90,000万
+                //-     td 30,000万
+                //-     td 33.33%
+                //- tr
+                //-     th 上周
+                //-     td 60,000万
+                //-         span.flag.flag-up ↑
+                //-     td 40,000万
+                //-         span.flag.flag-down ↓
+                //-     td 66.67%
+                //-         span.flag.flag-down ↓
+                //- tr
+                //-     th 上月
+                //-     td 40,000万
+                //-         span.flag.flag-up ↑
+                //-     td 30,000万
+                //-     td 75%
+                //-         span.flag.flag-down ↓
+    div.data-detail
+        span.txt-center
+            h3#data-title 蓝瀚互动
+        table
+            thead
+                tr
+                    th
+                    th 流水
+                    th 应收
+                    th 应收比例
+            tbody
+                //- tr
+                //-     th 当前
+                //-     td 8,000万
+                //-     td 6,000万
+                //-     td 75%
+                //- tr
+                //-     th 上周
+                //-     td 7,000万
+                //-         span.flag.flag-up ↑
+                //-     td 6,500万
+                //-         span.flag.flag-down ↓
+                //-     td 92.86%
+                //-         span.flag.flag-down ↓
+                //- tr
+                //-     th 上月
+                //-     td 5,000万
+                //-         span.flag.flag-up ↑
+                //-     td 3,000万
+                //-         span.flag.flag-up ↑
+                //-     td 60%
+                //-         span.flag.flag-up ↑
+    #main(style='width: 100%;height:400px;')
+    script(type='text/javascript').
+        setNowTime();
+        
+        function setNowTime() {
+            let storage = window.localStorage;
+            let season = storage.getItem('season');
+            console.log(season);
+            let yearField = document.querySelector("#year");
+            let seasonField = document.querySelector("#season");
+            if(season == null) {
+                let date = new Date();
+                yearField.value = date.getFullYear();
+                let month = date.getMonth();
+                console.log(month);
+                seasonField.value = getCurrentSeason(month+1);
+            } else {
+                let arr = season.split("-");
+                yearField.value = arr[0];
+                seasonField.value = arr[1];
+            }
+        }
+
+        function getCurrentSeason(currMonth) {
+            return 'Q' + Math.floor(( currMonth % 3 == 0 ? ( currMonth / 3 ) : ( currMonth / 3 + 1 )));
+        }
+        
+        let clickName = "", lastClickName = "", showAll = true;
+        
+
+        let tabs = document.querySelectorAll("a");
+        tabs.forEach((btn, index) => {
+            btn.onclick = function() {
+                tabs.forEach((item, i) => {
+                    if(index === i) {
+                        item.classList.add("active");
+                    } else {
+                        item.classList.remove("active");
+                    }
+                });
+                let type = "";
+                if(index === 0) {
+                    type = "dept";
+                } else if(index === 1) {
+                    type = "client";
+                }
+                dataAll.style.display = "block";
+                dataDetail.style.display = "none";
+                showAll = true;
+                option.dataZoom[0].startValue = 0;
+                option.dataZoom[0].endValue = 10;
+                getData(type);
+            }
+        })
+
+
+        // 基于准备好的dom，初始化echarts实例
+        let myChart = echarts.init(document.getElementById('main'));
+        // 指定图表的配置项和数据
+        let option = {
+            title: {
+                text: ''
+            },
+            grid: {
+                //- top: 10
+                containLabel: true,
+                bottom: 0,
+                left: 10
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b}: {c}%'
+            },
+            dataZoom: [{
+                //- start: 0,
+                //- end: 20,
+                startValue: 0,
+                endValue: 10,
+                type: "inside",
+                xAxisIndex: 0
+            }, {
+                start: 0
+            }],
+            xAxis: {
+                data: ['品牌中心拓展组','品牌中心上海第二事业部（汇总）','品牌中心全国创意部','品牌中心上海第一事业部（汇总）','品牌中心北京第二事业群（汇总）','品牌中心策略中心','品牌中心北京第一事业群（汇总）','品牌中心媒介中心','品牌中心运营管理部','品牌中心新业务事业部（汇总）','全国程序化组','平台中心','品牌中心离职中心','品牌中心职能部门','策划团队','运营数据分析中心','新兴资源中心','总裁办','品牌中心业务部门','全国汽车事业群（汇总）','上海公司','北京公司（汇总）','创意中心','新业务孵化中心','上海公司（汇总）','全国场景营销组'],
+                axisLabel:{
+                    interval: 0,
+                    formatter: function(val) {
+                        return val.split("").join("\n");
+                    }
+                }
+            },
+            yAxis: {},
+            series: [{
+                name: '应收比例',
+                //- radius: '60%',
+                //- center: ['50%', '50%'],
+                type: 'bar',
+                data: [{name:'品牌中心拓展组',value:'23'},
+                    {name:'品牌中心上海第二事业部（汇总）',value:'44'},
+                    {name:'品牌中心全国创意部',value:'13'},
+                    {name:'品牌中心上海第一事业部（汇总）',value:'43'},
+                    {name:'品牌中心北京第二事业群（汇总）',value:'24'},
+                    {name:'品牌中心策略中心',value:'65'},
+                    {name:'品牌中心北京第一事业群（汇总）',value:'43'},
+                    {name:'品牌中心媒介中心',value:'78'},
+                    {name:'品牌中心运营管理部',value:'35'},
+                    {name:'品牌中心新业务事业部（汇总）',value:'54'},
+                    {name:'全国程序化组',value:'46'},
+                    {name:'平台中心',value:'56'},
+                    {name:'品牌中心离职中心',value:'76'},
+                    {name:'品牌中心职能部门',value:'34'},
+                    {name:'策划团队',value:'45'},
+                    {name:'运营数据分析中心',value:'13'},
+                    {name:'新兴资源中心',value:'25'},
+                    {name:'总裁办',value:'34'},
+                    {name:'品牌中心业务部门',value:'43'},
+                    {name:'全国汽车事业群（汇总）',value:'56'},
+                    {name:'上海公司',value:'43'},
+                    {name:'北京公司（汇总）',value:'45'},
+                    {name:'创意中心',value:'56'},
+                    {name:'新业务孵化中心',value:'25'},
+                    {name:'上海公司（汇总）',value:'34'},
+                    {name:'全国场景营销组',value:'59'}
+                ],
+                itemStyle: {
+                    normal: {
+                        //- label:{show:true},
+                        color: function (params){
+                        //判断选中的名字改变柱子的颜色样式
+                            if(clickName === params.name) {
+                                if(clickName === lastClickName) {
+                                    if(showAll === true) {
+                                        return '#0093ff';
+                                    } else {
+                                        return '#e6cf4e';
+                                    }
+                                } else {
+                                    return '#e6cf4e';
+                                }
+                            } else {
+                                return '#0093ff';
+                            }
+                        }
+                    }
+                }
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        //- myChart.setOption(option);
+
+        getData("dept");
+        function getData(type) {
+            let nowTime = $("#year").val();
+            if($("#season").val() !== "全年") {
+                nowTime += "-" + $("#season").val();
+            }
+            let hatid = $("#dataField").val();
+            $.ajax({
+                url: "/getData/detail",
+                method: "get",
+                data: {
+                    type: type,
+                    nowTime: nowTime,
+                    hatid: hatid
+                },
+                success(res) {
+                    console.log(res);
+                    if(type === "dept") {
+                        renderData(res);
+                    } else if(type === "client") {
+                        renderDataByClient(res);
+                    }
+                    
+                }
+            })
+            //- alert(type);
+
+        }
+
+        let nowData = "";
+        let lastMonthData = "";
+        // 使用刚指定的配置项和数据显示图表。
+        function renderDataByClient(res) {
+            let nowDataTemp = res.nowData;
+            let lastMonthDataTemp = res.lastMonthData;
+            console.log("renderDataByClient");
+            console.log(nowDataTemp);
+            let xAxis = [];
+            let titile = nowDataTemp[0].unitbase_name;
+            $("#title").html(title);
+            
+            let all = 0;
+            let receive = 0;
+            let ratio = 0;
+            if(nowDataTemp.length !== 0) {
+                let objAll = nowDataTemp[nowDataTemp.length - 1];
+                all = objAll.total_flow * 1;
+                receive = objAll.receive_balance * 1;
+                ratio = objAll.value * 1;
+            }
+            
+            nowData = nowDataTemp;
+            if(nowDataTemp.length - 1 === 30) {
+                nowData.splice(nowData.length - 1, 1);
+                let othersFlow = all;
+                let othersReceive = receive;
+                let othersRatio = 0;
+                nowData.forEach((v,k) => {
+                    othersFlow -= v.total_flow * 1;
+                    othersReceive -= v.receive_balance * 1;
+                });
+                if(othersReceive != 0) {
+                    othersRatio = (othersReceive / othersFlow * 100).toFixedBfc();
+                }
+                nowData.push({
+                    "receive_balance": othersReceive,
+                    "client_code": "",
+                    "unitid": nowDataTemp[0].unitbaseid,
+                    "name": "其他",
+                    "value": othersRatio,
+                    "total_flow": othersFlow,
+                    "unit_name": nowDataTemp[0].unitbase_name
+                });
+                console.log("nowData");
+                console.log(nowData);
+            } else {
+                nowData.splice(nowData.length - 1, 1);
+            }
+            nowData.forEach((v,k) => {
+                let name = v.name;
+                if(name.length > 20) {
+                    name = name.substr(0, 20);
+                }
+                xAxis.push(name);
+            });
+            option.xAxis.data = xAxis;
+            option.series[0].data = nowData;
+            myChart.setOption(option);
+
+            //- console.log("上月：");
+            //- console.log(lastMonthDataTemp);
+            lastMonthData = [...lastMonthDataTemp];
+            let lastAll = 0;
+            let lastReceive = 0;
+            if(lastMonthData.length !== 0) {
+                //- lastMonthData = lastMonthData.splice(0,lastMonthData.length - 1);
+                let lastObj = lastMonthDataTemp[lastMonthDataTemp.length - 1];
+                console.log(lastObj);
+                lastAll = lastObj.total_flow;
+                lastReceive = lastObj.receive_balance;
+            }
+
+
+            if(lastMonthDataTemp.length - 1 === 30) {
+                lastMonthData.splice(lastMonthData.length - 1, 1);
+                let othersFlow = lastAll;
+                let othersReceive = lastReceive;
+                let othersRatio = 0;
+                lastMonthData.forEach((v,k) => {
+                    othersFlow -= v.total_flow * 1;
+                    othersReceive -= v.receive_balance * 1;
+                });
+                if(othersReceive != 0) {
+                    othersRatio = (othersReceive / othersFlow * 100).toFixedBfc();
+                }
+                lastMonthData.push({
+                    "receive_balance": othersReceive,
+                    "client_code": "",
+                    "unitid": lastMonthData[0].unitbaseid,
+                    "name": "其他",
+                    "value": othersRatio,
+                    "total_flow": othersFlow,
+                    "unit_name": lastMonthData[0].unitbase_name
+                });
+                console.log("nowData");
+                console.log(lastMonthData);
+            } else {
+                lastMonthData.splice(lastMonthData.length - 1, 1);
+            }
+
+
+
+
+            
+            
+            let lastRatio = 0;
+            if(lastAll !== 0) {
+                lastRatio = (lastReceive/lastAll * 100).toFixedBfc();
+            }
+
+            let html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(all)}</td>
+                            <td>${formatMoney(receive)}</td>
+                            <td>${ratio}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>${formatMoney(lastAll)}${getNotation(all, lastAll)}</td>
+                            <td>${formatMoney(lastReceive)}${getNotation(receive, lastReceive)}</td>
+                            <td>${lastRatio}%${getNotation(ratio, lastRatio)}</td>
+                        </tr>`;
+            $(".data-all tbody").html(html);
+        }
+
+        function renderData(res) {
+            nowData = res.nowData;
+            lastMonthData = res.lastMonthData;
+            let xAxis = [];
+            let title = nowData[0].unitbase_name;
+            $("#title").html(title);
+            nowData.forEach((v,k) => {
+                let name = v.name;
+                if(name.length > 20) {
+                    name = name.substr(0, 20);
+                }
+                xAxis.push(name);
+            });
+            option.xAxis.data = xAxis;
+            option.series[0].data = nowData;
+            //- if(nowData.length < 5) {
+            //-     option.series[0].barWidth = "10%";
+            //- }
+            myChart.setOption(option);
+
+            let all = 0;
+            let receive = 0;
+            let lastAll = 0;
+            let lastReceive = 0;
+            nowData.forEach((v,k) => {
+                all += v.total_flow * 1;
+                receive += v.receive_balance * 1;
+            })
+
+            lastMonthData.forEach((v,k) => {
+                lastAll += v.total_flow * 1;
+                lastReceive += v.receive_balance * 1;
+            })
+            let ratio = 0;
+            let lastRatio = 0;
+            if(all !== 0) {
+                ratio = (receive/all * 100).toFixedBfc();
+            }
+            if(lastAll !== 0) {
+                lastRatio = (lastReceive/lastAll * 100).toFixedBfc();
+            }
+            
+            let html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(all)}</td>
+                            <td>${formatMoney(receive)}</td>
+                            <td>${ratio}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>${formatMoney(lastAll)}${getNotation(all, lastAll)}</td>
+                            <td>${formatMoney(lastReceive)}${getNotation(receive, lastReceive)}</td>
+                            <td>${lastRatio}%${getNotation(ratio, lastRatio)}</td>
+                        </tr>`;
+            $(".data-all tbody").html(html);
+        }
+
+
+        function renderDetail(index) {
+            let now = nowData[index];
+            let lastMonth = lastMonthData[index];
+            let html = "";
+            if(typeof lastMonth !== "undefined") {
+                html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(now.total_flow)}</td>
+                            <td>${formatMoney(now.receive_balance)}</td>
+                            <td>${now.value}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>${formatMoney(lastMonth.total_flow)}${getNotation(now.total_flow, lastMonth.total_flow)}</td>
+                            <td>${formatMoney(lastMonth.receive_balance)}${getNotation(now.receive_balance, lastMonth.receive_balance)}</td>
+                            <td>${lastMonth.value}%${getNotation(now.value, lastMonth.value)}</td>
+                        </tr>`;
+            } else {
+                html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(now.total_flow)}</td>
+                            <td>${formatMoney(now.receive_balance)}</td>
+                            <td>${now.value}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>0${getNotation(now.total_flow, 0)}</td>
+                            <td>0${getNotation(now.receive_balance, 0)}</td>
+                            <td>0%${getNotation(now.value, 0)}</td>
+                        </tr>`;
+            }
+            
+            $(".data-detail tbody").html(html);
+        }
+
+        let dataAll = document.querySelector(".data-all");
+        let dataDetail = document.querySelector(".data-detail");
+        let dataTitle = document.querySelector("#data-title");
+        myChart.on('click', (params) => {
+            console.log(params);
+            let currentName = params.name;
+            lastClickName = clickName;
+            clickName = currentName;
+
+            renderDetail(params.dataIndex);
+
+            if(lastClickName === clickName && showAll === false) {
+                dataAll.style.display = "block";
+                dataDetail.style.display = "none";
+                showAll = true;
+            } else {
+                dataAll.style.display = "none";
+                dataDetail.style.display = "block";
+                dataTitle.innerText = currentName;
+                showAll = false;
+            }
+
+            let count = option.series[0].data.length;
+            let startValue = params.dataIndex -5;
+            startValue = startValue < 0 ? 0 : startValue;
+            if(startValue > count - 10) {
+                startValue = count - 10;
+            }
+
+            let endValue = startValue + 10;
+            if(endValue >= count) {
+                endValue = count
+            }
+            option.dataZoom[0].startValue = startValue;
+            option.dataZoom[0].endValue = endValue;
+            myChart.setOption(option);
+
+
+            
+        });

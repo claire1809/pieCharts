@@ -1,0 +1,316 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+    meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    title 应收比例报表
+    // 引入 echarts.js
+    script(src='/js/echarts.common.min.js')
+    script(src='/js/jquery-3.4.0.js')
+    script(src='/js/common.js')
+    link(type='text/css',href='/style/style.css',rel='stylesheet')
+  body
+    div 
+        input#dataField(type="hidden" value=auth)
+        select#year
+            option 2017
+            option 2018
+            option 2019
+            option 2020
+        |-
+        select#season
+            option Q1
+            option Q2
+            option Q3
+            option Q4
+            option 全年
+        button#btnSearch 查询
+    span.txt-center
+        h3#title 
+    
+    table
+        thead
+            tr
+                th
+                th 流水
+                th 应收
+                th 应收比例
+        tbody
+            tr
+                th 当前
+                td 90,000万
+                td 30,000万
+                td 33.33%
+            //- tr
+            //-     th 上周
+            //-     td 60,000万
+            //-         span.flag.flag-up ↑
+            //-     td 40,000万
+            //-         span.flag.flag-down ↓
+            //-     td 66.67%
+            //-         span.flag.flag-down ↓
+            tr
+                th 上月
+                td 40,000万
+                    span.flag.flag-up ↑
+                td 30,000万
+                td 75%
+                    span.flag.flag-down ↓
+    #main.chart-container
+    script(type='text/javascript').
+        setNowTime();
+        
+        function setNowTime() {
+            let storage = window.localStorage;
+            let season = storage.getItem('season');
+            let yearField = document.querySelector("#year");
+            let seasonField = document.querySelector("#season");
+            if(season === null) {
+                let date = new Date();
+                yearField.value = date.getFullYear();
+                let month = date.getMonth();
+                //- console.log(month);
+                seasonField.value = getCurrentSeason(month+1);
+            } else {
+                let arr = season.split("-");
+                yearField.value = arr[0];
+                seasonField.value = arr[1];
+            }
+        }
+
+        function getCurrentSeason(currMonth) {
+            return 'Q' + Math.floor(( currMonth % 3 == 0 ? ( currMonth / 3 ) : ( currMonth / 3 + 1 )));
+        }
+
+        
+
+        // 基于准备好的dom，初始化echarts实例
+        //- let myChart = echarts.init(document.getElementById('main'), null, {renderer: 'svg'});
+        let myChart = echarts.init(document.getElementById('main'));
+        // 指定图表的配置项和数据
+        let option = {
+            title: {
+                text: ''
+            },
+        //-     color: ["#2ec7c9", "#b6a2de", "#5ab1ef", "#ffb980", "#d87a80",
+        //- "#8d98b3", "#FFEA01", "#B8D07C", "#fca4bb", "#dc69aa",
+        //- "#07a2a4", "#9a7fd1", "#588dd5", "#f5994e", "#c05050",
+        //- "#59678c", "#c9ab00", "#7eb00a", "#6f5553", "#c14089"],
+        //- ['#1890FF', '#13C2C2', '#2FC25B', '#FACC14', '#F04864', '#8543E0', '#3436C7', '#223273']
+            color: ["#4b91ff", "#2FC25B", "#fac350", "#f45510", "#074f63", "#b6a2de", "#13C2C2", "#8543e0",
+             "#223273", "#cccccc", "#3436C7", "#F04864"],
+            //- tooltip: {
+            //-     trigger: 'item',
+            //-     formatter: '{a} <br/>{b}: {c}%'
+            //- },
+            //- xAxis: {
+            //-     data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+            //- },
+            //- yAxis: {},
+            series: [{
+                name: '应收比例',
+                radius: '50%',
+                center: ['50%', '50%'],
+                type: 'pie',
+                labelLine: {
+                    length: 0
+                },
+                label: {
+                    //- formatter: [
+                    //-     '{a|{a}}','{hr|}','{b|{b}：}{c}'
+                    //- ].join('\n'),
+                    formatter: function(a) {
+                        //- console.log(a);
+                        let seriesName = a.seriesName;
+                        let name = a['data'].name;
+                        let value = a['data'].value;
+                        let nameReturn = "";
+                        if(name.length > 3) {
+                            nameReturn = name.substr(0,3) + "\n" + name.substr(3);
+                        } else {
+                            nameReturn = name;
+                        }
+                        return '{a|' + seriesName + '}\n{hr|}\n{b|' + nameReturn + ':' + value + '%}';
+                    },
+                    backgroundColor: '#eee',
+                    borderColor: '#aaa',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    rich: {
+                        a: {
+                            color: '#999',
+                            lineHeight: 22,
+                            align: 'center'
+                        },
+                        hr: {
+                            borderColor: '#aaa',
+                            width: '100%',
+                            borderWidth: 0.5,
+                            height: 0
+                        },
+                        b: {
+                            fontSize: 16,
+                            lineHeight: 20,
+                            align: 'left',
+                            padding: [0, 5, 0, 5],
+                        }
+                    }
+                },
+                data: [{name: '天津合创', value: '20'},
+                        {name: '多盟', value: '8'},
+                        {name: '亿动', value: '15'},
+                        {name: '蓝标传媒中央', value: '2'},
+                        {name: '蓝瀚互动', value: '15'},
+                        {name: '集团媒体购买中心', value: '12'},
+                        {name: '品牌中心', value: '18'},
+                        {name: '西红柿', value: '10'}]
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        function renderData(res) {
+            console.log(res);
+            let nowData = res.nowData;
+            let lastMonthData = res.lastMonthData;
+            let pieData = nowData;
+            let title = pieData.length === 0 ? '' : pieData[0].title;
+            $("#title").html(title);
+            let pieAll = 0;
+            for(let i = 0; i < pieData.length; i++) {
+                pieAll += pieData[i].receive_balance * 1;
+            }
+            if(pieAll !== 0) {
+                //- console.log("pieAll:", pieAll);
+                pieData.forEach((v,k) => {
+                    //- console.log(v);
+                    v.value = (v.receive_balance * 1 / pieAll * 100).toFixedBfc();
+                    //- console.log(v.receive_balance);
+                    //- console.log(v.value);
+                });
+            }
+
+
+            option.series[0].data = pieData;
+            myChart.setOption(option);
+
+            let all = 0;
+            let receive = 0;
+            let lastAll = 0;
+            let lastReceive = 0;
+            nowData.forEach((v,k) => {
+                all += v.total_flow * 1;
+                receive += v.receive_balance * 1;
+            })
+
+            lastMonthData.forEach((v,k) => {
+                lastAll += v.total_flow * 1;
+                lastReceive += v.receive_balance * 1;
+            })
+            let ratio = 0;
+            let lastRatio = 0;
+            if(all !== 0) {
+                ratio = (receive/all * 100).toFixedBfc();
+            }
+            if(lastAll !== 0) {
+                lastRatio = (lastReceive/lastAll * 100).toFixedBfc();
+            }
+            console.log("总流水:" + all);
+            console.log("总应收:" + receive);
+            let html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(all)}</td>
+                            <td>${formatMoney(receive)}</td>
+                            <td>${ratio}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>${formatMoney(lastAll)}${getNotation(all, lastAll)}</td>
+                            <td>${formatMoney(lastReceive)}${getNotation(receive, lastReceive)}</td>
+                            <td>${lastRatio}%${getNotation(ratio, lastRatio)}</td>
+                        </tr>`;
+            $("tbody").html(html);
+        }
+        let auth = JSON.parse($("#dataField").val())[0];
+        if(auth.AUTH_ID == "1") {
+            $("h3").html('集团总部');
+        }
+        getData();
+        function getData() {
+            let nowTime = $("#year").val();
+            if($("#season").val() !== "全年") {
+                nowTime += "-" + $("#season").val();
+            }
+            //- console.log(nowTime);
+            //- console.log(auth);
+            $.ajax({
+                url: "/getData",
+                method: "get",
+                data: {
+                    nowTime: nowTime,
+                    authType: auth.AUTH_TYPE,
+                    authID: auth.AUTH_ID
+                },
+                success(res) {
+                    //- console.log(res.nowData);
+                    
+                    renderData(res);
+                }
+            })
+        }
+
+        $("#btnSearch").click(function() {
+            getData();
+        })
+
+        let clicked = 1;
+        let clickedTime = {
+            timeA: '',
+            timeB: ''
+        };
+        function clicking (params) {
+            if (clicked === 1) {
+            clickedTime.timeA = new Date();
+            clicked++;
+            } else if (clicked === 2) {
+            clickedTime.timeB = new Date();
+            if (Math.abs(clickedTime.timeA - clickedTime.timeB) < 300) {
+                //  双击
+                dblClick(params);
+                clicked = 1;
+            } else {
+                clickedTime.timeA = new Date();
+            }
+            }
+        }
+        function dblClick (params) {
+            //- console.log('双击');
+            //- console.log(params);
+            //- console.log(params.data.company_id);
+            let season = $("#year").val() + "-" + $("#season").val();
+            let storage = window.localStorage;
+            storage.setItem('season', season);
+            let userid = localStorage.getItem('userid');
+            if(auth.AUTH_ID === '1') {
+                if(params.data.parent_company_id === '1') {
+                    window.location = '/ReceivableRatio/detail?companyid=' + params.data.company_id;
+                } else {
+                    window.location = '/ReceivableRatio?id=1&userid=' + userid + '&authid=' + params.data.parent_company_id;
+                }
+                
+            } else {
+                window.location = '/ReceivableRatio/detail?companyid=' + params.data.company_id;
+            }
+            
+        }
+        myChart.on('click', (params) => {
+            //- console.log(params.name);
+            //- alert(params.name);
+            //- $.ajax({
+            //-     url: "/detail",
+            //-     success(res) {
+            //-         console.log(res);
+                    
+            //-     }
+            //- })
+            clicking(params);
+        });
