@@ -99,17 +99,18 @@ html
     script(type='text/javascript').
         setNowTime();
         
+        //根据localStorage缓存设置当前时间
         function setNowTime() {
             let storage = window.localStorage;
             let season = storage.getItem('season');
-            console.log(season);
+            //- console.log(season);
             let yearField = document.querySelector("#year");
             let seasonField = document.querySelector("#season");
             if(season == null) {
                 let date = new Date();
                 yearField.value = date.getFullYear();
                 let month = date.getMonth();
-                console.log(month);
+                //- console.log(month);
                 seasonField.value = getCurrentSeason(month+1);
             } else {
                 let arr = season.split("-");
@@ -118,6 +119,7 @@ html
             }
         }
 
+        //获取当前季度
         function getCurrentSeason(currMonth) {
             return 'Q' + Math.floor(( currMonth % 3 == 0 ? ( currMonth / 3 ) : ( currMonth / 3 + 1 )));
         }
@@ -126,6 +128,7 @@ html
         
 
         let tabs = document.querySelectorAll("a");
+        //客户部门按钮绑定click事件
         tabs.forEach((btn, index) => {
             btn.onclick = function() {
                 tabs.forEach((item, i) => {
@@ -247,6 +250,7 @@ html
         //- myChart.setOption(option);
 
         getData("dept");
+        //根据类型获取数据
         function getData(type) {
             let nowTime = $("#year").val();
             if($("#season").val() !== "全年") {
@@ -262,6 +266,7 @@ html
                     hatid: hatid
                 },
                 success(res) {
+                    console.log("getData-res");
                     console.log(res);
                     if(type === "dept") {
                         renderData(res);
@@ -272,15 +277,13 @@ html
                 }
             })
             //- alert(type);
-
         }
 
         let nowData = "";
         let lastMonthData = "";
         // 使用刚指定的配置项和数据显示图表。
         function renderDataByClient(res) {
-            let nowDataTemp = res.nowData;
-            let lastMonthDataTemp = res.lastMonthData;
+            let nowDataTemp = res.data;
             console.log("renderDataByClient");
             console.log(nowDataTemp);
             let xAxis = [];
@@ -290,11 +293,17 @@ html
             let all = 0;
             let receive = 0;
             let ratio = 0;
+            let lastAll = 0;
+            let lastReceive = 0;
+            let lastRatio = 0;
             if(nowDataTemp.length !== 0) {
                 let objAll = nowDataTemp[nowDataTemp.length - 1];
                 all = objAll.total_flow * 1;
                 receive = objAll.receive_balance * 1;
                 ratio = objAll.value * 1;
+                lastAll = objAll.total_flow_last * 1;
+                lastReceive = objAll.receive_balance_last * 1;
+                lastRatio = objAll.value_last * 1;
             }
             
             nowData = nowDataTemp;
@@ -303,24 +312,36 @@ html
                 let othersFlow = all;
                 let othersReceive = receive;
                 let othersRatio = 0;
+
+                let othersFlowLast = lastAll;
+                let othersReceiveLast = lastReceive;
+                let othersRatioLast = 0;
                 nowData.forEach((v,k) => {
                     othersFlow -= v.total_flow * 1;
                     othersReceive -= v.receive_balance * 1;
+                    othersFlowLast -= v.total_flow_last * 1;
+                    othersReceiveLast -= v.receive_balance_last * 1;
                 });
                 if(othersReceive != 0) {
                     othersRatio = (othersReceive / othersFlow * 100).toFixedBfc();
                 }
+                if(othersReceiveLast != 0) {
+                    othersRatioLast = (othersReceiveLast / othersFlowLast * 100).toFixedBfc();
+                }
                 nowData.push({
                     "receive_balance": othersReceive,
+                    "receive_balance_last": othersReceiveLast,
                     "client_code": "",
                     "unitid": nowDataTemp[0].unitbaseid,
                     "name": "其他",
                     "value": othersRatio,
+                    "value_last": othersRatioLast,
                     "total_flow": othersFlow,
+                    "total_flow_last": othersFlowLast,
                     "unit_name": nowDataTemp[0].unitbase_name
                 });
-                console.log("nowData");
-                console.log(nowData);
+                //- console.log("nowData");
+                //- console.log(nowData);
             } else {
                 nowData.splice(nowData.length - 1, 1);
             }
@@ -335,56 +356,7 @@ html
             option.series[0].data = nowData;
             myChart.setOption(option);
 
-            //- console.log("上月：");
-            //- console.log(lastMonthDataTemp);
-            lastMonthData = [...lastMonthDataTemp];
-            let lastAll = 0;
-            let lastReceive = 0;
-            if(lastMonthData.length !== 0) {
-                //- lastMonthData = lastMonthData.splice(0,lastMonthData.length - 1);
-                let lastObj = lastMonthDataTemp[lastMonthDataTemp.length - 1];
-                console.log(lastObj);
-                lastAll = lastObj.total_flow;
-                lastReceive = lastObj.receive_balance;
-            }
-
-
-            if(lastMonthDataTemp.length - 1 === 30) {
-                lastMonthData.splice(lastMonthData.length - 1, 1);
-                let othersFlow = lastAll;
-                let othersReceive = lastReceive;
-                let othersRatio = 0;
-                lastMonthData.forEach((v,k) => {
-                    othersFlow -= v.total_flow * 1;
-                    othersReceive -= v.receive_balance * 1;
-                });
-                if(othersReceive != 0) {
-                    othersRatio = (othersReceive / othersFlow * 100).toFixedBfc();
-                }
-                lastMonthData.push({
-                    "receive_balance": othersReceive,
-                    "client_code": "",
-                    "unitid": lastMonthData[0].unitbaseid,
-                    "name": "其他",
-                    "value": othersRatio,
-                    "total_flow": othersFlow,
-                    "unit_name": lastMonthData[0].unitbase_name
-                });
-                console.log("nowData");
-                console.log(lastMonthData);
-            } else {
-                lastMonthData.splice(lastMonthData.length - 1, 1);
-            }
-
-
-
-
-            
-            
-            let lastRatio = 0;
-            if(lastAll !== 0) {
-                lastRatio = (lastReceive/lastAll * 100).toFixedBfc();
-            }
+            lastMonthData = nowData;            
 
             let html = `<tr>
                             <td>当前</td>
@@ -462,9 +434,26 @@ html
         function renderDetail(index) {
             let now = nowData[index];
             let lastMonth = lastMonthData[index];
+            console.log("renderDetail");
+            console.log(now);
+            console.log(lastMonth);
             let html = "";
             if(typeof lastMonth !== "undefined") {
-                html = `<tr>
+                if(lastMonth.hasOwnProperty("total_flow_last")) {
+                    html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(now.total_flow)}</td>
+                            <td>${formatMoney(now.receive_balance)}</td>
+                            <td>${now.value}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>${formatMoney(lastMonth.total_flow_last)}${getNotation(now.total_flow, lastMonth.total_flow_last)}</td>
+                            <td>${formatMoney(lastMonth.receive_balance_last)}${getNotation(now.receive_balance, lastMonth.receive_balance_last)}</td>
+                            <td>${lastMonth.value_last}%${getNotation(now.value, lastMonth.value_last)}</td>
+                        </tr>`;
+                } else {
+                    html = `<tr>
                             <td>当前</td>
                             <td>${formatMoney(now.total_flow)}</td>
                             <td>${formatMoney(now.receive_balance)}</td>
@@ -476,6 +465,7 @@ html
                             <td>${formatMoney(lastMonth.receive_balance)}${getNotation(now.receive_balance, lastMonth.receive_balance)}</td>
                             <td>${lastMonth.value}%${getNotation(now.value, lastMonth.value)}</td>
                         </tr>`;
+                }
             } else {
                 html = `<tr>
                             <td>当前</td>
@@ -530,7 +520,4 @@ html
             option.dataZoom[0].startValue = startValue;
             option.dataZoom[0].endValue = endValue;
             myChart.setOption(option);
-
-
-            
         });

@@ -21,6 +21,8 @@ function formatMoney(num) {
  */
 function getNotation(num1, num2) {
     let htmlStr = "";
+    num1 = num1 * 1;
+    num2 = num2 * 1;
     if(num1 < num2) {
         htmlStr = `<span class='flag flag-down'>↓</span>`;
     } else if (num1 > num2) {

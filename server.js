@@ -14,8 +14,8 @@ const { rejects } = require("assert");
 
 const corpid = 'wx44673e3489d0f215';
 const corpsecret = 'nu2uk2ylWLS-341eD2xUBg0dqlePBpORJtFfQglxykA';
-// const requestUri = 'http://oatest.bluefocusgroup.com:8089/mobile/plugin/jsp/chart/';//测试
-const requestUri = 'http://oa.bluefocusgroup.com:8088/mobile/plugin/jsp/chart/';//正式
+const requestUri = 'http://oatest.bluefocusgroup.com:8089/mobile/plugin/jsp/chart/';//测试
+// const requestUri = 'http://oa.bluefocusgroup.com:8088/mobile/plugin/jsp/chart/';//正式
 
 
 let app = new Koa();
@@ -108,7 +108,7 @@ router.get('/getData', async (ctx) => {
     let nowData = await getData(getDataUrl, postData);
     console.log(postData);
     let lastMonthData = await getData(getDataUrl, postData1);
-    console.log(nowData);
+    console.log(lastMonthData);
 
     // let data = {
     //     name: 'claire'
@@ -145,12 +145,19 @@ router.get('/getData/detail', async ctx => {
         'getType': 'lastMonth',
         'season': nowTime
     });
-    let nowData = await getData(getDataUrl, postData);
-    // console.log(nowData);
-    // console.log("+++++++++++++++++++++++++++++++++++++++++");
-    let lastMonthData = await getData(getDataUrl, postData1);
-    console.log(lastMonthData);
-    ctx.body = {nowData,lastMonthData};
+    if(type === "client") {
+        let data = await getData(getDataUrl, postData);
+        console.log(data);
+        ctx.body = {data};
+    } else if (type === "dept") {
+        let nowData = await getData(getDataUrl, postData);
+        // console.log(nowData);
+        // console.log("+++++++++++++++++++++++++++++++++++++++++");
+        let lastMonthData = await getData(getDataUrl, postData1);
+        console.log(lastMonthData);
+        ctx.body = {nowData,lastMonthData};
+    }
+    
 })
 
 
