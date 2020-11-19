@@ -2,7 +2,7 @@ doctype html
 html
   head
     meta(charset='utf-8')
-    meta(name='viewport', content='width=device-width')
+    meta(name='viewport', content='width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
     meta(http-equiv='X-UA-Compatible', content='ie=edge')
     title 应收比例报表
     // 引入 echarts.js
@@ -13,19 +13,19 @@ html
   body
     div 
         input#dataField(type="hidden" value=hatid)
-        select#year(disabled=true)
+        select#year
             option 2017
             option 2018
             option 2019
             option 2020
         |-
-        select#season(disabled=true)
+        select#season
             option Q1
             option Q2
             option Q3
             option Q4
             option 全年
-        
+        button#btnSearch 查询
     div.tab
         //- a#back(href='/') 返回
         //- a#dept.right(href='/detail?type=dept') 一级部门
@@ -128,6 +128,8 @@ html
         
 
         let tabs = document.querySelectorAll("a");
+
+        let currentType = "dept";
         //客户部门按钮绑定click事件
         tabs.forEach((btn, index) => {
             btn.onclick = function() {
@@ -138,18 +140,17 @@ html
                         item.classList.remove("active");
                     }
                 });
-                let type = "";
                 if(index === 0) {
-                    type = "dept";
+                    currentType = "dept";
                 } else if(index === 1) {
-                    type = "client";
+                    currentType = "client";
                 }
                 dataAll.style.display = "block";
                 dataDetail.style.display = "none";
                 showAll = true;
                 option.dataZoom[0].startValue = 0;
                 option.dataZoom[0].endValue = 10;
-                getData(type);
+                getData(currentType);
             }
         })
 
@@ -249,7 +250,7 @@ html
         // 使用刚指定的配置项和数据显示图表。
         //- myChart.setOption(option);
 
-        getData("dept");
+        getData(currentType);
         //根据类型获取数据
         function getData(type) {
             let nowTime = $("#year").val();
@@ -483,6 +484,14 @@ html
             
             $(".data-detail tbody").html(html);
         }
+
+        $("#btnSearch").click(function() {
+            //返回时有缓存，如果设置了storage，刷新页面时时间会变
+            //- let season = $("#year").val() + "-" + $("#season").val();
+            //- let storage = window.localStorage;
+            //- storage.setItem('season', season);
+            getData(currentType);
+        })
 
         let dataAll = document.querySelector(".data-all");
         let dataDetail = document.querySelector(".data-detail");

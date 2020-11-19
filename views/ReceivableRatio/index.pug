@@ -4,6 +4,9 @@ html
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
     meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    //- meta(http-equiv='Pragma', content='no-cache')
+    //- meta(http-equiv='Cache-Control', content='no-cache')
+    //- meta(http-equiv='Expires', content='0')
     title 应收比例报表
     // 引入 echarts.js
     script(src='/js/echarts.common.min.js')
@@ -59,6 +62,13 @@ html
                     span.flag.flag-down ↓
     #main.chart-container
     script(type='text/javascript').
+        //- //防止页面缓存 企业微信中访问不起作用
+        //- var pagNum=performance.navigation.type;
+        //- console.log(performance);
+        //- console.log(pagNum);
+        //- if(pagNum==2){//用户通过后退按钮访问本页面
+        //-     document.location.reload();
+        //- }
         setNowTime();
         
         function setNowTime() {
@@ -259,6 +269,9 @@ html
         }
 
         $("#btnSearch").click(function() {
+            let season = $("#year").val() + "-" + $("#season").val();
+            let storage = window.localStorage;
+            storage.setItem('season', season);
             getData();
         })
 
@@ -286,9 +299,7 @@ html
             //- console.log('双击');
             //- console.log(params);
             //- console.log(params.data.company_id);
-            let season = $("#year").val() + "-" + $("#season").val();
-            let storage = window.localStorage;
-            storage.setItem('season', season);
+            
             let userid = localStorage.getItem('userid');
             if(auth.AUTH_ID === '1') {
                 if(params.data.parent_company_id === '1') {
