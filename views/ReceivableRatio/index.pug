@@ -282,17 +282,17 @@ html
         };
         function clicking (params) {
             if (clicked === 1) {
-            clickedTime.timeA = new Date();
-            clicked++;
-            } else if (clicked === 2) {
-            clickedTime.timeB = new Date();
-            if (Math.abs(clickedTime.timeA - clickedTime.timeB) < 300) {
-                //  双击
-                dblClick(params);
-                clicked = 1;
-            } else {
                 clickedTime.timeA = new Date();
-            }
+                clicked++;
+            } else if (clicked === 2) {
+                clickedTime.timeB = new Date();
+                if (Math.abs(clickedTime.timeA - clickedTime.timeB) < 300) {
+                    //  双击
+                    dblClick(params);
+                    clicked = 1;
+                } else {
+                    clickedTime.timeA = new Date();
+                }
             }
         }
         function dblClick (params) {
@@ -323,5 +323,6 @@ html
                     
             //-     }
             //- })
-            clicking(params);
+            //- clicking(params);
+            dblClick(params);
         });
