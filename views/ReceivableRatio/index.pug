@@ -181,6 +181,11 @@ html
         function renderData(res) {
             console.log(res);
             let nowData = res.nowData;
+
+            if(nowData.length === 1) {
+                window.location = '/ReceivableRatio/detail?companyid=' + nowData[0].company_id;
+            }
+
             let lastMonthData = res.lastMonthData;
             let pieData = nowData;
             let title = pieData.length === 0 ? '' : pieData[0].title;
@@ -301,16 +306,21 @@ html
             //- console.log(params.data.company_id);
             
             let userid = localStorage.getItem('userid');
-            if(auth.AUTH_ID === '1') {
-                if(params.data.parent_company_id === '1') {
-                    window.location = '/ReceivableRatio/detail?companyid=' + params.data.company_id;
-                } else {
-                    window.location = '/ReceivableRatio?id=1&userid=' + userid + '&authid=' + params.data.parent_company_id;
-                }
-                
+            if(params.data.company_id === '0') {
+                window.location = '/ReceivableRatio?id=1&userid=' + userid + '&authid=' + params.data.current_id;
             } else {
                 window.location = '/ReceivableRatio/detail?companyid=' + params.data.company_id;
             }
+            //- if(auth.AUTH_ID === '1') {
+            //-     if(params.data.parent_company_id === '1') {
+            //-         window.location = '/ReceivableRatio/detail?companyid=' + params.data.company_id;
+            //-     } else {
+            //-         window.location = '/ReceivableRatio?id=1&userid=' + userid + '&authid=' + params.data.parent_company_id;
+            //-     }
+                
+            //- } else {
+            //-     window.location = '/ReceivableRatio/detail?companyid=' + params.data.company_id;
+            //- }
             
         }
         myChart.on('click', (params) => {
