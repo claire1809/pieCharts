@@ -116,7 +116,19 @@ router.get('/getData', async (ctx) => {
     ctx.body = {nowData,lastMonthData};
 });
 
-
+router.get('/getData/client', async (ctx) => {
+    // console.log("getData");
+    // console.log(ctx.query);
+    let {nowTime, authType, authID} = ctx.query;
+    let postData = querystring.stringify({
+        'authID': authID,
+        'season': nowTime
+    });
+    const getDataUrl = 'receiveRatio/getClientDataByAuth.jsp';
+    let data = await getData(getDataUrl, postData);
+    console.log(data);
+    ctx.body = {data};
+});
 
 router.get('/ReceivableRatio/detail', async (ctx) => {
     // console.log("==========================detail");

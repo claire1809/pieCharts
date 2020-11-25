@@ -29,38 +29,103 @@ html
             option Q4
             option 全年
         button#btnSearch 查询
-    span.txt-center
-        h3#title 
-    
-    table
-        thead
-            tr
-                th
-                th 流水
-                th 应收
-                th 应收比例
-        tbody
-            tr
-                th 当前
-                td 90,000万
-                td 30,000万
-                td 33.33%
-            //- tr
-            //-     th 上周
-            //-     td 60,000万
-            //-         span.flag.flag-up ↑
-            //-     td 40,000万
-            //-         span.flag.flag-down ↓
-            //-     td 66.67%
-            //-         span.flag.flag-down ↓
-            tr
-                th 上月
-                td 40,000万
-                    span.flag.flag-up ↑
-                td 30,000万
-                td 75%
-                    span.flag.flag-down ↓
-    #main.chart-container
+    div#pie-section
+        span.txt-center
+            h3#title
+        table
+            thead
+                tr
+                    th
+                    th 流水
+                    th 应收
+                    th 应收比例
+            tbody
+                tr
+                    th 当前
+                    td 90,000万
+                    td 30,000万
+                    td 33.33%
+                //- tr
+                //-     th 上周
+                //-     td 60,000万
+                //-         span.flag.flag-up ↑
+                //-     td 40,000万
+                //-         span.flag.flag-down ↓
+                //-     td 66.67%
+                //-         span.flag.flag-down ↓
+                tr
+                    th 上月
+                    td 40,000万
+                        span.flag.flag-up ↑
+                    td 30,000万
+                    td 75%
+                        span.flag.flag-down ↓
+        #main.chart-container
+    div#bar-section
+        div.data-all
+            span.txt-center
+                h3#title 客户TOP30
+            table
+                thead
+                    tr
+                        th
+                        th 流水
+                        th 应收
+                        th 应收比例
+                tbody
+                    //- tr
+                    //-     th 当前
+                    //-     td 90,000万
+                    //-     td 30,000万
+                    //-     td 33.33%
+                    //- tr
+                    //-     th 上周
+                    //-     td 60,000万
+                    //-         span.flag.flag-up ↑
+                    //-     td 40,000万
+                    //-         span.flag.flag-down ↓
+                    //-     td 66.67%
+                    //-         span.flag.flag-down ↓
+                    //- tr
+                    //-     th 上月
+                    //-     td 40,000万
+                    //-         span.flag.flag-up ↑
+                    //-     td 30,000万
+                    //-     td 75%
+                    //-         span.flag.flag-down ↓
+        div.data-detail
+            span.txt-center
+                h3#data-title 蓝瀚互动
+            table
+                thead
+                    tr
+                        th
+                        th 流水
+                        th 应收
+                        th 应收比例
+                tbody
+                    //- tr
+                    //-     th 当前
+                    //-     td 8,000万
+                    //-     td 6,000万
+                    //-     td 75%
+                    //- tr
+                    //-     th 上周
+                    //-     td 7,000万
+                    //-         span.flag.flag-up ↑
+                    //-     td 6,500万
+                    //-         span.flag.flag-down ↓
+                    //-     td 92.86%
+                    //-         span.flag.flag-down ↓
+                    //- tr
+                    //-     th 上月
+                    //-     td 5,000万
+                    //-         span.flag.flag-up ↑
+                    //-     td 3,000万
+                    //-         span.flag.flag-up ↑
+                    //-     td 60%
+                    //-         span.flag.flag-up ↑
+        #client-bar.chart-container
     script(type='text/javascript').
         //- //防止页面缓存 企业微信中访问不起作用
         //- var pagNum=performance.navigation.type;
@@ -93,7 +158,15 @@ html
             return 'Q' + Math.floor(( currMonth % 3 == 0 ? ( currMonth / 3 ) : ( currMonth / 3 + 1 )));
         }
 
-        
+        let specialColorList = {
+            "362": "#f2bf11",
+            "109": "#f2bf11",
+            "117": "#71ad47",
+            "141": "#3a75b6",
+            "118": "#c02524"
+        };
+        let colorList = ["#4b91ff", "#2FC25B", "#ffeb3b", "#f45510", "#9c27b0", "#b6a2de", "#13C2C2", "#8543e0",
+             "#3f51b5", "#cccccc", "#795548", "#F04864"];
 
         // 基于准备好的dom，初始化echarts实例
         //- let myChart = echarts.init(document.getElementById('main'), null, {renderer: 'svg'});
@@ -108,8 +181,8 @@ html
         //- "#07a2a4", "#9a7fd1", "#588dd5", "#f5994e", "#c05050",
         //- "#59678c", "#c9ab00", "#7eb00a", "#6f5553", "#c14089"],
         //- ['#1890FF', '#13C2C2', '#2FC25B', '#FACC14', '#F04864', '#8543E0', '#3436C7', '#223273']
-            color: ["#4b91ff", "#2FC25B", "#fac350", "#f45510", "#074f63", "#b6a2de", "#13C2C2", "#8543e0",
-             "#223273", "#cccccc", "#3436C7", "#F04864"],
+            //- color: ["#4b91ff", "#2FC25B", "#fac350", "#f45510", "#074f63", "#b6a2de", "#13C2C2", "#8543e0",
+            //-  "#223273", "#cccccc", "#3436C7", "#F04864"],
             //- tooltip: {
             //-     trigger: 'item',
             //-     formatter: '{a} <br/>{b}: {c}%'
@@ -123,6 +196,19 @@ html
                 radius: '50%',
                 center: ['50%', '50%'],
                 type: 'pie',
+                itemStyle: {
+                    normal: {
+                        color: function(params) {
+                            console.log(params);
+                            if(specialColorList[params.data.company_id]) {
+                                return specialColorList[params.data.company_id];
+                            } else {
+                                return colorList[params.dataIndex];
+                            }
+                            
+                        }
+                    }
+                },
                 labelLine: {
                     length: 0
                 },
@@ -177,6 +263,106 @@ html
                         {name: '西红柿', value: '10'}]
             }]
         };
+
+        let clickName = "", lastClickName = "", showAll = true;
+        // 基于准备好的dom，初始化echarts实例
+        let clientBar = echarts.init(document.getElementById('client-bar'));
+        // 指定图表的配置项和数据
+        let barOption = {
+            title: {
+                text: ''
+            },
+            grid: {
+                //- top: 10
+                containLabel: true,
+                bottom: 0,
+                left: 10
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b}: {c}%'
+            },
+            dataZoom: [{
+                //- start: 0,
+                //- end: 20,
+                startValue: 0,
+                endValue: 10,
+                type: "inside",
+                xAxisIndex: 0
+            }, {
+                start: 0
+            }],
+            xAxis: {
+                data: ['品牌中心拓展组','品牌中心上海第二事业部（汇总）','品牌中心全国创意部','品牌中心上海第一事业部（汇总）','品牌中心北京第二事业群（汇总）','品牌中心策略中心','品牌中心北京第一事业群（汇总）','品牌中心媒介中心','品牌中心运营管理部','品牌中心新业务事业部（汇总）','全国程序化组','平台中心','品牌中心离职中心','品牌中心职能部门','策划团队','运营数据分析中心','新兴资源中心','总裁办','品牌中心业务部门','全国汽车事业群（汇总）','上海公司','北京公司（汇总）','创意中心','新业务孵化中心','上海公司（汇总）','全国场景营销组'],
+                axisLabel:{
+                    interval: 0,
+                    formatter: function(val) {
+                        return val.split("").join("\n");
+                    }
+                }
+            },
+            yAxis: {},
+            series: [{
+                name: '应收比例',
+                //- radius: '60%',
+                //- center: ['50%', '50%'],
+                type: 'bar',
+                data: [{name:'品牌中心拓展组',value:'23'},
+                    {name:'品牌中心上海第二事业部（汇总）',value:'44'},
+                    {name:'品牌中心全国创意部',value:'13'},
+                    {name:'品牌中心上海第一事业部（汇总）',value:'43'},
+                    {name:'品牌中心北京第二事业群（汇总）',value:'24'},
+                    {name:'品牌中心策略中心',value:'65'},
+                    {name:'品牌中心北京第一事业群（汇总）',value:'43'},
+                    {name:'品牌中心媒介中心',value:'78'},
+                    {name:'品牌中心运营管理部',value:'35'},
+                    {name:'品牌中心新业务事业部（汇总）',value:'54'},
+                    {name:'全国程序化组',value:'46'},
+                    {name:'平台中心',value:'56'},
+                    {name:'品牌中心离职中心',value:'76'},
+                    {name:'品牌中心职能部门',value:'34'},
+                    {name:'策划团队',value:'45'},
+                    {name:'运营数据分析中心',value:'13'},
+                    {name:'新兴资源中心',value:'25'},
+                    {name:'总裁办',value:'34'},
+                    {name:'品牌中心业务部门',value:'43'},
+                    {name:'全国汽车事业群（汇总）',value:'56'},
+                    {name:'上海公司',value:'43'},
+                    {name:'北京公司（汇总）',value:'45'},
+                    {name:'创意中心',value:'56'},
+                    {name:'新业务孵化中心',value:'25'},
+                    {name:'上海公司（汇总）',value:'34'},
+                    {name:'全国场景营销组',value:'59'}
+                ],
+                label: {
+                    show: true,
+                    formatter: '{c}%'
+                },
+                itemStyle: {
+                    normal: {
+                        //- label:{show:true},
+                        color: function (params){
+                        //判断选中的名字改变柱子的颜色样式
+                            if(clickName === params.name) {
+                                if(clickName === lastClickName) {
+                                    if(showAll === true) {
+                                        return '#0093ff';
+                                    } else {
+                                        return '#e6cf4e';
+                                    }
+                                } else {
+                                    return '#e6cf4e';
+                                }
+                            } else {
+                                return '#0093ff';
+                            }
+                        }
+                    }
+                }
+            }]
+        };
+        clientBar.setOption(barOption);
+
         // 使用刚指定的配置项和数据显示图表。
         function renderData(res) {
             console.log(res);
@@ -189,7 +375,7 @@ html
             let lastMonthData = res.lastMonthData;
             let pieData = nowData;
             let title = pieData.length === 0 ? '' : pieData[0].title;
-            $("#title").html(title);
+            $("#pie-section #title").html(title);
             let pieAll = 0;
             for(let i = 0; i < pieData.length; i++) {
                 pieAll += pieData[i].receive_balance * 1;
@@ -243,12 +429,10 @@ html
                             <td>${formatMoney(lastReceive)}${getNotation(receive, lastReceive)}</td>
                             <td>${lastRatio}%${getNotation(ratio, lastRatio)}</td>
                         </tr>`;
-            $("tbody").html(html);
+            $("#pie-section tbody").html(html);
         }
         let auth = JSON.parse($("#dataField").val())[0];
-        if(auth.AUTH_ID == "1") {
-            $("h3").html('集团总部');
-        }
+
         getData();
         function getData() {
             let nowTime = $("#year").val();
@@ -267,8 +451,24 @@ html
                 },
                 success(res) {
                     //- console.log(res.nowData);
-                    
+                    console.log("pieData");
                     renderData(res);
+                }
+            })
+
+            $.ajax({
+                url: "/getData/client",
+                method: "get",
+                data: {
+                    nowTime: nowTime,
+                    authType: auth.AUTH_TYPE,
+                    authID: auth.AUTH_ID
+                },
+                success(res) {
+                    console.log("clientData");
+                    console.log(res);
+                    renderDataByClient(res);
+                    //- renderDataClient(res);
                 }
             })
         }
@@ -335,4 +535,210 @@ html
             //- })
             //- clicking(params);
             dblClick(params);
+        });
+
+        let clientNowData = "";
+        let clientLastMonthData = "";
+        // 使用刚指定的配置项和数据显示图表。
+        function renderDataByClient(res) {
+            let nowDataTemp = res.data;
+            console.log("renderDataByClient");
+            console.log(nowDataTemp);
+            let xAxis = [];
+            // let titile = nowDataTemp[0].unitbase_name;
+            // $("#title").html(title);
+            
+            let all = 0;
+            let receive = 0;
+            let ratio = 0;
+            let lastAll = 0;
+            let lastReceive = 0;
+            let lastRatio = 0;
+            if(nowDataTemp.length !== 0) {
+                let objAll = nowDataTemp[nowDataTemp.length - 1];
+                all = objAll.total_flow * 1;
+                receive = objAll.receive_balance * 1;
+                ratio = objAll.value * 1;
+                lastAll = objAll.total_flow_last * 1;
+                lastReceive = objAll.receive_balance_last * 1;
+                lastRatio = objAll.value_last * 1;
+            }
+            
+            clientNowData = nowDataTemp;
+            if(nowDataTemp.length - 1 === 30) {
+                clientNowData.splice(clientNowData.length - 1, 1);
+                let othersFlow = all;
+                let othersReceive = receive;
+                let othersRatio = 0;
+
+                let othersFlowLast = lastAll;
+                let othersReceiveLast = lastReceive;
+                let othersRatioLast = 0;
+                clientNowData.forEach((v,k) => {
+                    othersFlow -= v.total_flow * 1;
+                    othersReceive -= v.receive_balance * 1;
+                    othersFlowLast -= v.total_flow_last * 1;
+                    othersReceiveLast -= v.receive_balance_last * 1;
+                });
+                if(othersReceive != 0) {
+                    othersRatio = (othersReceive / othersFlow * 100).toFixedBfc();
+                }
+                if(othersReceiveLast != 0) {
+                    othersRatioLast = (othersReceiveLast / othersFlowLast * 100).toFixedBfc();
+                }
+                clientNowData.push({
+                    "receive_balance": othersReceive,
+                    "receive_balance_last": othersReceiveLast,
+                    "client_code": "",
+                    "unitid": nowDataTemp[0].unitbaseid,
+                    "name": "其他",
+                    "value": othersRatio,
+                    "value_last": othersRatioLast,
+                    "total_flow": othersFlow,
+                    "total_flow_last": othersFlowLast,
+                    "unit_name": nowDataTemp[0].unitbase_name
+                });
+                //- console.log("nowData");
+                //- console.log(nowData);
+            } else {
+                clientNowData.splice(clientNowData.length - 1, 1);
+            }
+            clientNowData.forEach((v,k) => {
+                let name = v.name;
+                if(name.length > 20) {
+                    name = name.substr(0, 20);
+                }
+                xAxis.push(name);
+            });
+            barOption.xAxis.data = xAxis;
+            barOption.series[0].data = clientNowData;
+            clientBar.setOption(barOption);
+
+            clientLastMonthData = clientNowData;            
+
+            let html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(all)}</td>
+                            <td>${formatMoney(receive)}</td>
+                            <td>${ratio}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>${formatMoney(lastAll)}${getNotation(all, lastAll)}</td>
+                            <td>${formatMoney(lastReceive)}${getNotation(receive, lastReceive)}</td>
+                            <td>${lastRatio}%${getNotation(ratio, lastRatio)}</td>
+                        </tr>`;
+            $("#bar-section .data-all tbody").html(html);
+        }
+
+        function renderDetail(index) {
+            let now = clientNowData[index];
+            let lastMonth = clientLastMonthData[index];
+            console.log("renderDetail");
+            console.log(now);
+            console.log(lastMonth);
+            let html = "";
+            if(typeof lastMonth !== "undefined") {
+                if(lastMonth.hasOwnProperty("total_flow_last")) {
+                    html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(now.total_flow)}</td>
+                            <td>${formatMoney(now.receive_balance)}</td>
+                            <td>${now.value}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>${formatMoney(lastMonth.total_flow_last)}${getNotation(now.total_flow, lastMonth.total_flow_last)}</td>
+                            <td>${formatMoney(lastMonth.receive_balance_last)}${getNotation(now.receive_balance, lastMonth.receive_balance_last)}</td>
+                            <td>${lastMonth.value_last}%${getNotation(now.value, lastMonth.value_last)}</td>
+                        </tr>`;
+                } else {
+                    html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(now.total_flow)}</td>
+                            <td>${formatMoney(now.receive_balance)}</td>
+                            <td>${now.value}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>${formatMoney(lastMonth.total_flow)}${getNotation(now.total_flow, lastMonth.total_flow)}</td>
+                            <td>${formatMoney(lastMonth.receive_balance)}${getNotation(now.receive_balance, lastMonth.receive_balance)}</td>
+                            <td>${lastMonth.value}%${getNotation(now.value, lastMonth.value)}</td>
+                        </tr>`;
+                }
+            } else {
+                html = `<tr>
+                            <td>当前</td>
+                            <td>${formatMoney(now.total_flow)}</td>
+                            <td>${formatMoney(now.receive_balance)}</td>
+                            <td>${now.value}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>0${getNotation(now.total_flow, 0)}</td>
+                            <td>0${getNotation(now.receive_balance, 0)}</td>
+                            <td>0%${getNotation(now.value, 0)}</td>
+                        </tr>`;
+            }
+            
+            $("#bar-section .data-detail tbody").html(html);
+        }
+
+        let dataAll = document.querySelector("#bar-section .data-all");
+        let dataDetail = document.querySelector("#bar-section .data-detail");
+        let dataTitle = document.querySelector("#bar-section #data-title");
+
+        function barsOnClick(params) {
+            console.log("点击");
+            console.log(params);
+            let currentName = params.name;
+            lastClickName = clickName;
+            clickName = currentName;
+
+            renderDetail(params.dataIndex);
+
+            if(lastClickName === clickName && showAll === false) {
+                dataAll.style.display = "block";
+                dataDetail.style.display = "none";
+                showAll = true;
+            } else {
+                dataAll.style.display = "none";
+                dataDetail.style.display = "block";
+                dataTitle.innerText = currentName;
+                showAll = false;
+            }
+
+            let count = barOption.series[0].data.length;
+            let startValue = params.dataIndex -5;
+            startValue = startValue < 0 ? 0 : startValue;
+            if(startValue > count - 10) {
+                startValue = count - 10;
+            }
+
+            let endValue = startValue + 10;
+            if(endValue >= count) {
+                endValue = count
+            }
+            barOption.dataZoom[0].startValue = startValue;
+            barOption.dataZoom[0].endValue = endValue;
+            clientBar.setOption(barOption);
+        }
+
+        clientBar.getZr().on('click',params=>{
+            console.log("getZr");
+            console.log(params);
+            const pointInPixel = [params.offsetX, params.offsetY];
+            console.log(pointInPixel);
+            if (clientBar.containPixel('grid',pointInPixel)) {
+                let xIndex = clientBar.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[0];
+                /*事件处理代码书写位置*/
+                console.log(xIndex);
+                console.log(barOption.series[0].data[xIndex]);
+                let tempData = barOption.series[0].data[xIndex];
+                let tempParams = {
+                    name: tempData.name,
+                    dataIndex: xIndex
+                };
+                barsOnClick(tempParams);
+            }
         });
