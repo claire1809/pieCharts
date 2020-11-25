@@ -5,13 +5,15 @@
  */
 function formatMoney(num) {
     let money = Number((num / 10000).toFixedBfc(2));
-    return money.toLocaleString('zh', {
-        // style: 'currency',
-        // currency: "CNY",
-        // notation: 'compact',
-        // compactDisplay: 'short',
-        // maximumFractionDigits: 2
-    }) + '万';
+    var regForm = /(\d{1,3})(?=(\d{3})+(?:$|\.))/g;//?:不作为分组捕获
+    return money.toString().replace(regForm,"$1,") + "万";
+    // return money.toLocaleString('zh', {
+    //     // style: 'currency',
+    //     // currency: "CNY",
+    //     // notation: 'compact',
+    //     // compactDisplay: 'short',
+    //     // maximumFractionDigits: 2
+    // }) + '万';
 }
 
 /**
