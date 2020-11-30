@@ -28,7 +28,7 @@ html
             option Q3
             option Q4
             option 全年
-        button#btnSearch 查询
+        //- button#btnSearch 查询
     div#pie-section
         span.txt-center
             h3#title
@@ -473,7 +473,21 @@ html
             })
         }
 
-        $("#btnSearch").click(function() {
+        //- $("#btnSearch").click(function() {
+        //-     let season = $("#year").val() + "-" + $("#season").val();
+        //-     let storage = window.localStorage;
+        //-     storage.setItem('season', season);
+        //-     getData();
+        //- })
+
+        $("#year").change(function() {
+            let season = $("#year").val() + "-" + $("#season").val();
+            let storage = window.localStorage;
+            storage.setItem('season', season);
+            getData();
+        })
+
+        $("#season").change(function() {
             let season = $("#year").val() + "-" + $("#season").val();
             let storage = window.localStorage;
             storage.setItem('season', season);

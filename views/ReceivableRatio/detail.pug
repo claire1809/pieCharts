@@ -25,7 +25,7 @@ html
             option Q3
             option Q4
             option 全年
-        button#btnSearch 查询
+        //- button#btnSearch 查询
     div.tab
         //- a#back(href='/') 返回
         //- a#dept.right(href='/detail?type=dept') 一级部门
@@ -491,7 +491,23 @@ html
             $(".data-detail tbody").html(html);
         }
 
-        $("#btnSearch").click(function() {
+        //- $("#btnSearch").click(function() {
+        //-     //返回时有缓存，如果设置了storage，刷新页面时时间会变
+        //-     //- let season = $("#year").val() + "-" + $("#season").val();
+        //-     //- let storage = window.localStorage;
+        //-     //- storage.setItem('season', season);
+        //-     getData(currentType);
+        //- })
+
+        $("#year").change(function() {
+            //返回时有缓存，如果设置了storage，刷新页面时时间会变
+            //- let season = $("#year").val() + "-" + $("#season").val();
+            //- let storage = window.localStorage;
+            //- storage.setItem('season', season);
+            getData(currentType);
+        })
+
+        $("#season").change(function() {
             //返回时有缓存，如果设置了storage，刷新页面时时间会变
             //- let season = $("#year").val() + "-" + $("#season").val();
             //- let storage = window.localStorage;
