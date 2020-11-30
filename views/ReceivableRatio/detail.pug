@@ -350,6 +350,7 @@ html
             } else {
                 nowData.splice(nowData.length - 1, 1);
             }
+            nowData = nowData.filter(data => data.receive_balance != "0" && data.total_flow != "0");
             nowData.forEach((v,k) => {
                 let name = v.name;
                 if(name.length > 20) {
@@ -384,6 +385,7 @@ html
             let xAxis = [];
             let title = nowData[0].unitbase_name;
             $("#title").html(title);
+            nowData = nowData.filter(data => data.receive_balance != "0" && data.total_flow != "0");
             nowData.forEach((v,k) => {
                 let name = v.name;
                 if(name.length > 20) {
@@ -419,7 +421,7 @@ html
             if(lastAll !== 0) {
                 lastRatio = (lastReceive/lastAll * 100).toFixedBfc();
             }
-            
+            lastMonthData = lastMonthData.filter(data => data.receive_balance != "0" && data.total_flow != "0");
             let html = `<tr>
                             <td>当前</td>
                             <td>${formatMoney(all)}</td>
@@ -574,15 +576,15 @@ html
         //- });
 
         myChart.getZr().on('click',params=>{
-            console.log("getZr");
-            console.log(params);
+            //- console.log("getZr");
+            //- console.log(params);
             const pointInPixel = [params.offsetX, params.offsetY];
-            console.log(pointInPixel);
+            //- console.log(pointInPixel);
             if (myChart.containPixel('grid',pointInPixel)) {
                 let xIndex = myChart.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[0];
                 /*事件处理代码书写位置*/
-                console.log(xIndex);
-                console.log(option.series[0].data[xIndex]);
+                //- console.log(xIndex);
+                //- console.log(option.series[0].data[xIndex]);
                 let tempData = option.series[0].data[xIndex];
                 let tempParams = {
                     name: tempData.name,

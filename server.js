@@ -14,8 +14,8 @@ const { rejects } = require("assert");
 
 const corpid = 'wx44673e3489d0f215';
 const corpsecret = 'nu2uk2ylWLS-341eD2xUBg0dqlePBpORJtFfQglxykA';
-const requestUri = 'http://oatest.bluefocusgroup.com:8089/mobile/plugin/jsp/chart/';//测试
-// const requestUri = 'http://oa.bluefocusgroup.com:8088/mobile/plugin/jsp/chart/';//正式
+// const requestUri = 'http://oatest.bluefocusgroup.com:8089/mobile/plugin/jsp/chart/';//测试
+const requestUri = 'http://oa.bluefocusgroup.com:8088/mobile/plugin/jsp/chart/';//正式
 
 
 let app = new Koa();
