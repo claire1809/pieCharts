@@ -350,7 +350,9 @@ html
             } else {
                 nowData.splice(nowData.length - 1, 1);
             }
-            nowData = nowData.filter(data => data.receive_balance != "0" && data.total_flow != "0");
+            nowData = nowData.filter(data => !(data.receive_balance == "0" && data.total_flow == "0"));
+            console.log("nowData");
+            console.log(nowData);
             nowData.forEach((v,k) => {
                 let name = v.name;
                 if(name.length > 20) {
@@ -385,7 +387,9 @@ html
             let xAxis = [];
             let title = nowData[0].unitbase_name;
             $("#title").html(title);
-            nowData = nowData.filter(data => data.receive_balance != "0" && data.total_flow != "0");
+            nowData = nowData.filter(data => !(data.receive_balance == "0" && data.total_flow == "0"));
+            console.log("nowData");
+            console.log(nowData);
             nowData.forEach((v,k) => {
                 let name = v.name;
                 if(name.length > 20) {
@@ -421,7 +425,9 @@ html
             if(lastAll !== 0) {
                 lastRatio = (lastReceive/lastAll * 100).toFixedBfc();
             }
-            lastMonthData = lastMonthData.filter(data => data.receive_balance != "0" && data.total_flow != "0");
+            lastMonthData = lastMonthData.filter(data => !(data.receive_balance == "0" && data.total_flow == "0"));
+            console.log("lastMonthData");
+            console.log(lastMonthData);
             let html = `<tr>
                             <td>当前</td>
                             <td>${formatMoney(all)}</td>

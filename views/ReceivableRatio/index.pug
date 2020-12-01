@@ -617,7 +617,7 @@ html
             } else {
                 clientNowData.splice(clientNowData.length - 1, 1);
             }
-            clientNowData = clientNowData.filter(data => data.receive_balance != "0" && data.total_flow != "0");
+            clientNowData = clientNowData.filter(data => !(data.receive_balance == "0" && data.total_flow == "0"));
             clientNowData.forEach((v,k) => {
                 let name = v.name;
                 if(name.length > 20) {
