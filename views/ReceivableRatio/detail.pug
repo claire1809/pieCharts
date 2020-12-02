@@ -383,11 +383,39 @@ html
 
         function renderData(res) {
             nowData = res.nowData;
-            lastMonthData = res.lastMonthData;
+            let lastTemp = res.lastMonthData;
+            console.log("lastTemp");
+            console.log(lastTemp);
+            lastMonthData = [];
+            nowData.forEach((item, index) => {
+                let temp = lastTemp.filter(data => data.fisrtbase_deptid == item.fisrtbase_deptid);
+                if(temp.length > 0) {
+                    lastMonthData.push(temp[0]);
+                } else {
+                    lastMonthData.push({
+                        receive_balance: '0',
+                        unitbase_name: item.unitbase_name,
+                        fisrtbase_deptid: item.fisrtbase_deptid,
+                        name: item.name,
+                        value: '0',
+                        total_flow: '0',
+                        unitbaseid: item.unitbaseid
+                    });
+                }
+                //- lastMonthData.push();
+            });
+            console.log("lastMonthData");
+            console.log(lastMonthData);
+            //lastMonthData = res.lastMonthData;
             let xAxis = [];
             let title = nowData[0].unitbase_name;
             $("#title").html(title);
-            nowData = nowData.filter(data => !(data.receive_balance == "0" && data.total_flow == "0"));
+            nowData = nowData.filter((data, index) => {
+                if(data.receive_balance == "0" && data.total_flow == "0") {
+                    lastMonthData.splice(index, 1);
+                }
+                return !(data.receive_balance == "0" && data.total_flow == "0");
+            });
             console.log("nowData");
             console.log(nowData);
             nowData.forEach((v,k) => {
@@ -425,9 +453,9 @@ html
             if(lastAll !== 0) {
                 lastRatio = (lastReceive/lastAll * 100).toFixedBfc();
             }
-            lastMonthData = lastMonthData.filter(data => !(data.receive_balance == "0" && data.total_flow == "0"));
-            console.log("lastMonthData");
-            console.log(lastMonthData);
+            //- lastMonthData = lastMonthData.filter(data => !(data.receive_balance == "0" && data.total_flow == "0"));
+            //- console.log("lastMonthData");
+            //- console.log(lastMonthData);
             let html = `<tr>
                             <td>当前</td>
                             <td>${formatMoney(all)}</td>
@@ -526,8 +554,8 @@ html
         let dataTitle = document.querySelector("#data-title");
 
         function barsOnClick(params) {
-            console.log("点击");
-            console.log(params);
+            //- console.log("点击");
+            //- console.log(params);
             let currentName = params.name;
             lastClickName = clickName;
             clickName = currentName;
