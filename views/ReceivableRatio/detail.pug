@@ -18,6 +18,7 @@ html
             option 2018
             option 2019
             option 2020
+            option 2021
         |-
         select#season
             option Q1
@@ -382,7 +383,9 @@ html
         }
 
         function renderData(res) {
-            nowData = res.nowData;
+            nowData = res.nowData.sort((a,b) => {
+                return b.total_flow - a.total_flow;
+            });
             let lastTemp = res.lastMonthData;
             console.log("lastTemp");
             console.log(lastTemp);
