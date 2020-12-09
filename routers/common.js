@@ -1,7 +1,7 @@
 const http = require('http');
 
-// const requestUri = 'http://oatest.bluefocusgroup.com:8089/mobile/plugin/jsp/chart/';//测试
-const requestUri = 'http://oa.bluefocusgroup.com:8088/mobile/plugin/jsp/chart/';//正式
+const requestUri = 'http://oatest.bluefocusgroup.com:8089/mobile/plugin/jsp/chart/';//测试
+// const requestUri = 'http://oa.bluefocusgroup.com:8088/mobile/plugin/jsp/chart/';//正式
 
 function getData(urlString, postData) {
     return new Promise((resolve, rejects) => {

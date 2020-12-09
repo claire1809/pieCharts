@@ -34,6 +34,15 @@ router.get('/menu', async (ctx) => {
     }
 });
 
+router.get('/log', async (ctx) => {
+    let {userid, id} = ctx.query;
+    getData("log.jsp", querystring.stringify({
+        'userid' : userid,
+        'menuID' : id
+    }));
+    ctx.response.body = ``;
+});
+
 function getAccessToken() {
     return new Promise((resolve, rejects) => {
         let url = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=' + corpid + '&corpsecret=' + corpsecret;

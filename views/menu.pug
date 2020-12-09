@@ -5,6 +5,7 @@ html
         meta(name='viewport', content='width=device-width')
         title 图形化报表
         link(type='text/css', href='/style/menu.css', rel='stylesheet')
+        script(src='/js/jquery-3.4.0.js')
     body
         input#user(value=userid type='hidden')
         .container
@@ -21,4 +22,20 @@ html
             if(storage.getItem('season') !== null) {
                 storage.removeItem('season');
             }
+
+            $("a").bind('click', function() {
+                let id = this.id;
+                $.ajax({
+                    url: "/log",
+                    method: "get",
+                    data: {
+                        userid: userid,
+                        id: id
+                    },
+                    success(res) {
+                        
+                    }
+                })
+            });
+
             
