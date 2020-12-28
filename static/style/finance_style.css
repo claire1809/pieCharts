@@ -1,0 +1,156 @@
+* {
+    margin:0;
+    padding:0;
+}
+a {
+    display: inline-block;
+    text-decoration:none;
+    /* padding: 3px 5%; */
+    /* border: 1px solid #5cb6fe; */
+    color: #5cb6fe;
+    /* border-radius: 3px; */
+    cursor:pointer;
+    text-align: center;
+    font-size: 16px;
+    padding:2px;
+    /* margin: 3px 0px 0px 3px; */
+}
+a.active {
+    background-color: #5cb6fe;
+    color: #fff;
+}
+.tab {
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.right {
+    float: right;
+}
+.data-desc {
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    background-color: #f0eff4;
+    width: 90%;
+    margin: 1% 5%;
+    display: flex;
+    flex-direction: row;
+}
+/* .data-desc>div {
+    
+} */
+.data-title {
+    width:30%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.data-content {
+    /* width: 29%;
+    margin: 1.5%;
+    display: inline-block;
+    background-color: #fff;
+    padding: 0.1%; */
+    border-left: 1px solid #aaa;
+    padding-left: 5px;
+}
+.flag {
+    display: inline-block;
+    margin-left: 5px;
+    font-weight: bold;
+}
+.flag-up {
+    color: #ff0000;
+    animation: arrow-up 1.5s infinite ease-in-out;
+}
+.flag-down {
+    color: #479905;
+    animation: arrow-down 1.5s infinite ease-in-out;
+}
+hr {
+    /* border-color: #aaa; */
+    border: none;
+    border-top: 1px solid #aaa;
+}
+.txt-center {
+    display: block;
+    text-align: center;
+}
+
+table {
+    width: 90%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    text-align: center;
+}
+/* th {
+    text-align: left;
+} */
+table>tbody>tr>td, table>tbody>tr>th{
+    border-bottom: 1px solid #ddd;
+    width: 20%;
+    padding: 5px;
+}
+
+table>thead>tr>td,table>thead>tr>th{
+    border-bottom: 2px solid #ddd;
+    width: 20%;
+    padding: 5px;
+}
+
+.width-10 {
+    width: 10%;
+}
+
+.width-5 {
+    width: 7.5%;
+}
+
+.child {
+    margin-left: 7%;
+}
+
+/* th {
+    padding: -5px;
+} */
+
+
+
+.data-detail {
+    display: none;
+}
+
+
+
+@keyframes arrow-up {
+    0% {
+        opacity:0;
+        transform:translateY(5px)
+    }
+    50% {
+        opacity:1;
+        transform:translateY(0px)
+    }
+    100% {
+        opacity:0;
+        transform:translateY(-5px)
+    }
+}
+
+@keyframes arrow-down {
+    0% {
+        opacity:0;
+        transform:translateY(-5px)
+    }
+    50% {
+        opacity:1;
+        transform:translateY(0px)
+    }
+    100% {
+        opacity:0;
+        transform:translateY(5px)
+    }
+}
+

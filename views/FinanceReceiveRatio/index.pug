@@ -1,0 +1,434 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+    meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    //- meta(http-equiv='Pragma', content='no-cache')
+    //- meta(http-equiv='Cache-Control', content='no-cache')
+    //- meta(http-equiv='Expires', content='0')
+    title 应收比例报表
+    // 引入 echarts.js
+    script(src='/js/echarts.common.min.js')
+    script(src='/js/jquery-3.4.0.js')
+    script(src='/js/common.js')
+    link(type='text/css',href='/style/finance_style.css',rel='stylesheet')
+  body
+    div 
+        input#dataField(type="hidden" value=auth)
+    div#data-all
+        span.txt-center
+            h3#title
+        table
+            thead
+                tr
+                    th
+                    th 应收余额比例
+                    th 月度应收余额比例
+            tbody
+                tr
+                    th 当前
+                    td 90,000万
+                    td 30,000万
+                //- tr
+                //-     th 上周
+                //-     td 60,000万
+                //-         span.flag.flag-up ↑
+                //-     td 40,000万
+                //-         span.flag.flag-down ↓
+                //-     td 66.67%
+                //-         span.flag.flag-down ↓
+                tr
+                    th 上月
+                    td 40,000万
+                        span.flag.flag-up ↑
+                    td 30,000万
+                        span.flag.flag-down ↓
+    br
+    #data-detail
+        span.txt-center
+            h3#title 明细数据
+        div#detail-container
+            div
+                table
+                    thead
+                        tr
+                            th.width-10
+                            th.width-10
+                            th 应收余额比例
+                            th 月度应收余额比例
+                    tbody
+                        tr
+                            th.width-10 集团总部
+                                a 显示详情
+                            th.width-10 当前
+                            td 80% 
+                            td 80%
+                        tr
+                            th.width-10
+                            th.width-10 上月
+                            td 80%
+                            td 80%
+                div.child
+                    table
+                        tbody
+                            tr
+                                th.width-5 数字上海
+                                th.width-5 当前
+                                td 80%
+                                td 80%
+                            tr
+                                th.width-5
+                                th.width-5 上月
+                                td 80%
+                                td 80%
+            div
+                table
+                    tbody
+                        tr
+                            th.width-10 蓝标数字集团
+                                a 显示详情
+                            th.width-10 当前
+                            td 80%
+                            td 80%
+                        tr
+                            th.width-10
+                            th.width-10 上月
+                            td 80%
+                            td 80%
+                div.child
+                    table
+                        tbody
+                            tr
+                                th.width-5 数字北京
+                                th.width-5 当前
+                                td 80%
+                                td 80%
+                            tr
+                                th.width-5
+                                th.width-5 上月
+                                td 80%
+                                td 80%
+        
+    
+    script(type='text/javascript').
+        let month = new Date().getMonth() + 1;
+        let auth = JSON.parse($("#dataField").val())[0];
+        // 使用刚指定的配置项和数据显示图表。
+
+        function calcuRatio(receive, receiveBalance) {
+            if(receive === "0") {
+                return "0";
+            }
+            return (receiveBalance / receive * 100).toFixedBfc();
+        }
+
+        function calcuMonthRatio(receive, receiveBalance) {
+            if(receive === "0") {
+                return "0";
+            }
+            return (receiveBalance / (receive * month / 12) * 100).toFixedBfc();
+        }
+
+        function renderData(res) {
+            console.log(res);
+            let nowData = res.nowData;
+            let lastMonthDataTemp = res.lastMonthData;
+            let lastMonthData = [];
+            //按照当前数据将上月数据排序
+            nowData.forEach((v, k) => {
+                let temp = lastMonthDataTemp.filter(item => item.current_id == v.current_id);
+                if(temp.length === 0) {
+                    lastMonthData.push({
+                        "company_id": v.company_id,
+                        "current_id": v.current_id,
+                        "name": v.name,
+                        "receive": 0,
+                        "receive_balance": 0,
+                        "title": v.title
+                    });
+                } else {
+                    lastMonthData.push(temp[0]);
+                }
+            });
+            console.log(lastMonthDataTemp);
+            console.log(lastMonthData);
+
+            //设置title
+            let title = nowData.length === 0 ? '' : nowData[0].title;
+            $("#data-all #title").html(title);
+
+            //计算总数
+            let receiveAll = 0, receiveBalanceAll = 0, lastReceiveAll = 0, lastReceiveBalanceAll = 0;
+            for(let i = 0; i < nowData.length; i++) {
+                receiveAll += nowData[i].receive * 1;
+                receiveBalanceAll += nowData[i].receive_balance * 1
+                lastReceiveAll += lastMonthData[i].receive * 1;
+                lastReceiveBalanceAll += lastMonthData[i].receive_balance * 1
+            }
+            let ratioAll = 0, lastRatioAll = 0, monthRatioAll = 0, lastMonthRatioAll = 0;
+            if(receiveAll !== 0) {
+                ratioAll = calcuRatio(receiveAll, receiveBalanceAll);
+                monthRatioAll = calcuMonthRatio(receiveAll, receiveBalanceAll);
+            }
+            if(lastReceiveAll !== 0) {
+                lastRatioAll = calcuRatio(lastReceiveAll, lastReceiveBalanceAll);
+                lastMonthRatioAll = calcuMonthRatio(lastReceiveAll, lastReceiveBalanceAll);
+            }
+
+            //总数赋值
+            let html = `<tr>
+                            <td>当前</td>
+                            <td>${ratioAll}%</td>
+                            <td>${monthRatioAll}%</td>
+                        </tr>
+                        <tr>
+                            <td>上月</td>
+                            <td>${lastRatioAll}%${getNotation(ratioAll, lastRatioAll)}</td>
+                            <td>${lastMonthRatioAll}%${getNotation(monthRatioAll, lastMonthRatioAll)}</td>
+                        </tr>`;
+            $("#data-all tbody").html(html);
+            
+            //计算单独核算数据
+            nowData.forEach((v, k) => {
+                v.ratio = calcuRatio(v.receive, v.receive_balance);
+                v.month_ratio = calcuMonthRatio(v.receive, v.receive_balance);
+            });
+
+            lastMonthData.forEach((v, k) => {
+                v.ratio = calcuRatio(v.receive, v.receive_balance);
+                v.month_ratio = calcuMonthRatio(v.receive, v.receive_balance);
+            });
+
+            let detailHtml = "";
+            nowData.forEach((v, k) => {
+                detailHtml += `
+                    <div id='data-${k}'>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th class='width-10'>${v.name}${v.company_id === "0" ? `<a id='show-${k}' class='show-child'>显示详情</a>` : ''}</th>
+                                    <th class='width-10'>当前</th>
+                                    <td>${v.ratio}%</td>
+                                    <td>${v.month_ratio}%</td>
+                                </tr>
+                                <tr>
+                                    <th class='width-10'></th>
+                                    <th class='width-10'>上月</th>
+                                    <td>${lastMonthData[k].ratio}%${getNotation(v.ratio, lastMonthData[k].ratio)}</td>
+                                    <td>${lastMonthData[k].month_ratio}%${getNotation(v.month_ratio, lastMonthData[k].month_ratio)}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class='child'></div>
+                    </div>
+                `;
+            });
+            $("#detail-container").html(detailHtml);
+
+            $(".show-child").bind('click', function() {
+                let index = this.id.split("-")[1];
+                if($("#data-" + index + " .child").find("div").length > 0) {
+                    //- $("#data-" + index + " .child").hide();
+                    if($("#data-" + index + " .child").css("display") === "block") {
+                        $("#data-" + index + " .child").hide();
+                    } else {
+                        $("#data-" + index + " .child").show();
+                    }
+                } else {
+                    //- $("#data-" + index + " .child").show();
+                    let authID = nowData[index].current_id;
+                    $.ajax({
+                        url: "/FinanceReceiveRatio/getData",
+                        method: "get",
+                        data: {
+                            authType: auth.AUTH_TYPE,
+                            authID: authID
+                        },
+                        success(res) {
+                            //- console.log(res.nowData);
+                            console.log(res);
+                            renderChild(res, index);
+
+                        }
+                    })
+                }
+                
+            })
+
+        }
+        
+        function renderChild(res, index) {
+            console.log(res);
+            let nowData = res.nowData;
+            let lastMonthDataTemp = res.lastMonthData;
+            let lastMonthData = [];
+            //按照当前数据将上月数据排序
+            nowData.forEach((v, k) => {
+                let temp = lastMonthDataTemp.filter(item => item.current_id == v.current_id);
+                if(temp.length === 0) {
+                    lastMonthData.push({
+                        "company_id": v.company_id,
+                        "current_id": v.current_id,
+                        "name": v.name,
+                        "receive": 0,
+                        "receive_balance": 0,
+                        "title": v.title
+                    });
+                } else {
+                    lastMonthData.push(temp[0]);
+                }
+            });
+
+            //计算单独核算数据
+            nowData.forEach((v, k) => {
+                v.ratio = calcuRatio(v.receive, v.receive_balance);
+                v.month_ratio = calcuMonthRatio(v.receive, v.receive_balance);
+            });
+
+            lastMonthData.forEach((v, k) => {
+                v.ratio = calcuRatio(v.receive, v.receive_balance);
+                v.month_ratio = calcuMonthRatio(v.receive, v.receive_balance);
+            });
+
+            let detailHtml = "";
+            nowData.forEach((v, k) => {
+                detailHtml += `
+                    <div id='data1-${k}'>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th class='width-5'>${v.name}${v.company_id === "0" ? `<a id='show1-${k}' class='show1-child'>显示详情</a>` : ''}</th>
+                                    <th class='width-5'>当前</th>
+                                    <td>${v.ratio}%</td>
+                                    <td>${v.month_ratio}%</td>
+                                </tr>
+                                <tr>
+                                    <th class='width-5'></th>
+                                    <th class='width-5'>上月</th>
+                                    <td>${lastMonthData[k].ratio}%${getNotation(v.ratio, lastMonthData[k].ratio)}</td>
+                                    <td>${lastMonthData[k].month_ratio}%${getNotation(v.month_ratio, lastMonthData[k].month_ratio)}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class='child'></div>
+                    </div>
+                `;
+            });
+            $("#data-" + index + " .child").html(detailHtml);
+
+            $(".show1-child").bind('click', function() {
+                let index = this.id.split("-")[1];
+                if($("#data1-" + index + ">.child").find("div").length > 0) {
+                    //- $("#data-" + index + " .child").hide();
+                    if($("#data1-" + index + ">.child").css("display") === "block") {
+                        $("#data1-" + index + ">.child").hide();
+                    } else {
+                        $("#data1-" + index + ">.child").show();
+                    }
+                } else {
+                    let authID = nowData[index].current_id;
+                    $.ajax({
+                        url: "/FinanceReceiveRatio/getData",
+                        method: "get",
+                        data: {
+                            authType: auth.AUTH_TYPE,
+                            authID: authID
+                        },
+                        success(res) {
+                            //- console.log(res.nowData);
+                            console.log(res);
+                            renderDetailChild(res, index);
+
+                        }
+                    })
+                }
+                
+            })
+        }
+
+        function renderDetailChild(res, index) {
+            console.log(res);
+            let nowData = res.nowData;
+            let lastMonthDataTemp = res.lastMonthData;
+            let lastMonthData = [];
+            //按照当前数据将上月数据排序
+            nowData.forEach((v, k) => {
+                let temp = lastMonthDataTemp.filter(item => item.current_id == v.current_id);
+                if(temp.length === 0) {
+                    lastMonthData.push({
+                        "company_id": v.company_id,
+                        "current_id": v.current_id,
+                        "name": v.name,
+                        "receive": 0,
+                        "receive_balance": 0,
+                        "title": v.title
+                    });
+                } else {
+                    lastMonthData.push(temp[0]);
+                }
+            });
+
+            //计算单独核算数据
+            nowData.forEach((v, k) => {
+                v.ratio = calcuRatio(v.receive, v.receive_balance);
+                v.month_ratio = calcuMonthRatio(v.receive, v.receive_balance);
+            });
+
+            lastMonthData.forEach((v, k) => {
+                v.ratio = calcuRatio(v.receive, v.receive_balance);
+                v.month_ratio = calcuMonthRatio(v.receive, v.receive_balance);
+            });
+
+            let detailHtml = "";
+            nowData.forEach((v, k) => {
+                detailHtml += `
+                    <div>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th class='width-5'>${v.name}${v.company_id === "0" ? `<a>显示详情</a>` : ''}</th>
+                                    <th class='width-5'>当前</th>
+                                    <td>${v.ratio}%</td>
+                                    <td>${v.month_ratio}%</td>
+                                </tr>
+                                <tr>
+                                    <th class='width-5'></th>
+                                    <th class='width-5'>上月</th>
+                                    <td>${lastMonthData[k].ratio}%${getNotation(v.ratio, lastMonthData[k].ratio)}</td>
+                                    <td>${lastMonthData[k].month_ratio}%${getNotation(v.month_ratio, lastMonthData[k].month_ratio)}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            });
+            $("#data1-" + index + ">.child").html(detailHtml);
+        }
+
+        getData();
+        function getData() {
+            //- console.log(nowTime);
+            //- console.log(auth);
+            $.ajax({
+                url: "/FinanceReceiveRatio/getData",
+                method: "get",
+                data: {
+                    authType: auth.AUTH_TYPE,
+                    authID: auth.AUTH_ID
+                },
+                success(res) {
+                    //- console.log(res.nowData);
+                    //- console.log(res);
+                    renderData(res);
+                }
+            })
+        }
+
+        
+
+        
+
+        
+
+        
