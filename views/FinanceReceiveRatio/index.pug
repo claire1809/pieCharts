@@ -22,11 +22,13 @@ html
         table
             thead
                 tr
-                    th
+                    th.width-10
+                    th.width-10
                     th 应收余额比例
                     th 月度应收余额比例
             tbody
                 tr
+                    th
                     th 当前
                     td 90,000万
                     td 30,000万
@@ -39,6 +41,7 @@ html
                 //-     td 66.67%
                 //-         span.flag.flag-down ↓
                 tr
+                    th
                     th 上月
                     td 40,000万
                         span.flag.flag-up ↑
@@ -178,16 +181,26 @@ html
 
             //总数赋值
             let html = `<tr>
-                            <td>当前</td>
+                            <th class='width-10'>${title}<a id='show'>显示详情</a></th>
+                            <th class='width-10'>当前</th>
                             <td>${ratioAll}%</td>
                             <td>${monthRatioAll}%</td>
                         </tr>
                         <tr>
-                            <td>上月</td>
+                            <th class='width-10'></th>
+                            <th class='width-10'>上月</th>
                             <td>${lastRatioAll}%${getNotation(ratioAll, lastRatioAll)}</td>
                             <td>${lastMonthRatioAll}%${getNotation(monthRatioAll, lastMonthRatioAll)}</td>
                         </tr>`;
             $("#data-all tbody").html(html);
+
+            $("#show").bind("click", function() {
+                if($("#data-detail").css("display") === "block") {
+                    $("#data-detail").hide();
+                } else {
+                    $("#data-detail").show();
+                }
+            })
             
             //计算单独核算数据
             nowData.forEach((v, k) => {
@@ -228,12 +241,12 @@ html
 
             $(".show-child").bind('click', function() {
                 let index = this.id.split("-")[1];
-                if($("#data-" + index + " .child").find("div").length > 0) {
+                if($("#data-" + index + ">.child").find("div").length > 0) {
                     //- $("#data-" + index + " .child").hide();
-                    if($("#data-" + index + " .child").css("display") === "block") {
-                        $("#data-" + index + " .child").hide();
+                    if($("#data-" + index + ">.child").css("display") === "block") {
+                        $("#data-" + index + ">.child").hide();
                     } else {
-                        $("#data-" + index + " .child").show();
+                        $("#data-" + index + ">.child").show();
                     }
                 } else {
                     //- $("#data-" + index + " .child").show();
@@ -294,11 +307,11 @@ html
             let detailHtml = "";
             nowData.forEach((v, k) => {
                 detailHtml += `
-                    <div id='data1-${k}'>
+                    <div id='data-${index}-${k}'>
                         <table>
                             <tbody>
                                 <tr>
-                                    <th class='width-5'>${v.name}${v.company_id === "0" ? `<a id='show1-${k}' class='show1-child'>显示详情</a>` : ''}</th>
+                                    <th class='width-5'>${v.name}${v.company_id === "0" ? `<a id='show-${index}-${k}' class='show1-child'>显示详情</a>` : ''}</th>
                                     <th class='width-5'>当前</th>
                                     <td>${v.ratio}%</td>
                                     <td>${v.month_ratio}%</td>
@@ -315,19 +328,20 @@ html
                     </div>
                 `;
             });
-            $("#data-" + index + " .child").html(detailHtml);
+            $("#data-" + index + ">.child").html(detailHtml);
 
             $(".show1-child").bind('click', function() {
-                let index = this.id.split("-")[1];
-                if($("#data1-" + index + ">.child").find("div").length > 0) {
+                let parentIndex = this.id.split("-")[1]
+                let childIndex = this.id.split("-")[2];
+                if($("#data-" + parentIndex + "-" + childIndex + ">.child").find("div").length > 0) {
                     //- $("#data-" + index + " .child").hide();
-                    if($("#data1-" + index + ">.child").css("display") === "block") {
-                        $("#data1-" + index + ">.child").hide();
+                    if($("#data-" + parentIndex + "-" + childIndex + ">.child").css("display") === "block") {
+                        $("#data-" + parentIndex + "-" + childIndex + ">.child").hide();
                     } else {
-                        $("#data1-" + index + ">.child").show();
+                        $("#data-" + parentIndex + "-" + childIndex + ">.child").show();
                     }
                 } else {
-                    let authID = nowData[index].current_id;
+                    let authID = nowData[childIndex].current_id;
                     $.ajax({
                         url: "/FinanceReceiveRatio/getData",
                         method: "get",
@@ -338,7 +352,7 @@ html
                         success(res) {
                             //- console.log(res.nowData);
                             console.log(res);
-                            renderDetailChild(res, index);
+                            renderDetailChild(res, parentIndex, childIndex);
 
                         }
                     })
@@ -347,7 +361,7 @@ html
             })
         }
 
-        function renderDetailChild(res, index) {
+        function renderDetailChild(res, parentIndex, childIndex) {
             console.log(res);
             let nowData = res.nowData;
             let lastMonthDataTemp = res.lastMonthData;
@@ -403,7 +417,7 @@ html
                     </div>
                 `;
             });
-            $("#data1-" + index + ">.child").html(detailHtml);
+            $("#data-" + parentIndex + "-" + childIndex + ">.child").html(detailHtml);
         }
 
         getData();

@@ -91,13 +91,19 @@ table {
 table>tbody>tr>td, table>tbody>tr>th{
     border-bottom: 1px solid #ddd;
     width: 20%;
-    padding: 5px;
+    padding: 5px 0px;
+    word-wrap:break-word;
+    /* table-layout:fixed; */
+    word-break:break-all;
 }
 
 table>thead>tr>td,table>thead>tr>th{
     border-bottom: 2px solid #ddd;
     width: 20%;
-    padding: 5px;
+    padding: 5px 0px;
+    word-wrap:break-word;
+    /* table-layout:fixed; */
+    word-break:break-all;
 }
 
 .width-10 {
@@ -106,6 +112,7 @@ table>thead>tr>td,table>thead>tr>th{
 
 .width-5 {
     width: 7.5%;
+    /* width: 10%; */
 }
 
 .child {
@@ -118,7 +125,7 @@ table>thead>tr>td,table>thead>tr>th{
 
 
 
-.data-detail {
+#data-detail {
     display: none;
 }
 
