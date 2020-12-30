@@ -1,11 +1,18 @@
 const http = require('http');
 
-const requestUri = 'http://oatest.bluefocusgroup.com:8089/mobile/plugin/jsp/chart/';//测试
-// const requestUri = 'http://oa.bluefocusgroup.com:8088/mobile/plugin/jsp/chart/';//正式
+const requestUriTest = 'http://oatest.bluefocusgroup.com:8089/mobile/plugin/jsp/chart/';//测试
+// const requestUri = 'http://oatest.bluefocusgroup.com:8089/mobile/plugin/jsp/chart/';//测试
+const requestUri = 'http://oa.bluefocusgroup.com:8088/mobile/plugin/jsp/chart/';//正式
 
-function getData(urlString, postData) {
+function getData(urlString, postData, test) {
     return new Promise((resolve, rejects) => {
-        const url = requestUri + urlString;
+        let uri = requestUri;
+        // console.log(test);
+        if(test === true) {
+            uri = requestUriTest;
+        }
+        // console.log(uri);
+        const url = uri + urlString;
         const options = {
             method: 'POST',
             headers: {

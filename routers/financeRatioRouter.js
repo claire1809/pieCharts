@@ -20,7 +20,7 @@ router.get('/',async (ctx)=>{
             'menuID' : id
         });
         // console.log(postData1);
-        auth = await getData(authUrl, postData1);
+        auth = await getData(authUrl, postData1, true);
     } else {
         // console.log("second");
         auth = [{
@@ -50,9 +50,9 @@ router.get('/getData', async (ctx) => {
         'getType': 'lastMonth'
     });
     const getDataUrl = 'financeReceiveRatio/getByHat.jsp';
-    let nowData = await getData(getDataUrl, postData);
+    let nowData = await getData(getDataUrl, postData, true);
     // console.log(postData);
-    let lastMonthData = await getData(getDataUrl, postData1);
+    let lastMonthData = await getData(getDataUrl, postData1, true);
     // console.log(lastMonthData);
 
     // let data = {
