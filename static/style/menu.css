@@ -20,14 +20,15 @@ body {
     background-color: #5cb6fe;
     /* padding: 40px 0px; */
     height: 100px;
-    line-height: 100px;
+    /* line-height: 100px; */
     text-align: center;
+    display:flex;
 }
 .container div a {
     text-decoration:none;
     /* color: #3c4353; */
     color: #fff;
     font-weight: bold;
-    display: block;
-    height: inherit;
+    /* overflow: hidden; */
+    margin:auto;
 }
