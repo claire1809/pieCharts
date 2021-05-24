@@ -75,7 +75,11 @@ Number.prototype.toFixedBfc = function(len){
         //最后一位数字大于5，要进位
         var times = Math.pow(10, len); //需要放大的倍数
         var changedInt = Number(result.replace('.',''));//截取后转为整数
-        changedInt++;//整数进位
+        if(changedInt > 0) {
+        	changedInt++;//整数进位
+        } else {
+        	changedInt--;//整数进位
+        }
         changedInt /= times;//整数转为小数，注：有可能还是整数
         result = padNum(changedInt+'');
     }

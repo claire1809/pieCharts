@@ -98,6 +98,7 @@ html
                 //-         span.flag.flag-up ↑
     #main(style='width: 100%;height:400px;')
     script(type='text/javascript').
+        debugger;
         setNowTime();
         
         //根据localStorage缓存设置当前时间
@@ -323,15 +324,15 @@ html
                 let othersReceiveLast = lastReceive;
                 let othersRatioLast = 0;
                 nowData.forEach((v,k) => {
-                    othersFlow -= v.total_flow * 1;
-                    othersReceive -= v.receive_balance * 1;
-                    othersFlowLast -= v.total_flow_last * 1;
-                    othersReceiveLast -= v.receive_balance_last * 1;
+                    othersFlow = (othersFlow - v.total_flow * 1).toFixedBfc(4);
+                    othersReceive = (othersReceive - v.receive_balance * 1).toFixedBfc(4);
+                    othersFlowLast = (othersFlowLast - v.total_flow_last * 1).toFixedBfc(4);
+                    othersReceiveLast = (othersReceiveLast - v.receive_balance_last * 1).toFixedBfc(4);
                 });
-                if(othersReceive != 0) {
+                if(othersFlow != 0) {
                     othersRatio = (othersReceive / othersFlow * 100).toFixedBfc();
                 }
-                if(othersReceiveLast != 0) {
+                if(othersFlowLast != 0) {
                     othersRatioLast = (othersReceiveLast / othersFlowLast * 100).toFixedBfc();
                 }
                 nowData.push({
